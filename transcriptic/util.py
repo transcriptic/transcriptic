@@ -297,10 +297,10 @@ class PreviewParameters:
             ali.get('well_idx'): ali for ali in container.get('aliquots')
         }
         for i in index_arr:
-            ali = container_aliquots[i]
+            ali = container_aliquots.get(i, container)
             ref_aliquots[i] = {
                 'name': ali.get('name'),
-                'volume': '{}:microliter'.format(ali.get('volume_ul')),
+                'volume': '{}:microliter'.format(ali.get('volume_ul', 10)),
                 'properties': ali.get('properties')
             }
         return ref_aliquots
