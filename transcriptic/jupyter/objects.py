@@ -9,14 +9,19 @@ import warnings
 try:
     import pandas as pd
 except ImportError:
-    raise ImportError("Please run `pip install transcriptic[jupyter] if you "
-                      "would like to use Transcriptic objects.")
+    raise ImportError(
+        "Please run `pip install transcriptic[jupyter] if you "
+        "would like to use Transcriptic objects."
+    )
 
 
 def _check_api(obj_type):
     from transcriptic import api
+
     if not api:
-        raise RuntimeError("You have to be logged in to be able to create %s objects" % obj_type)
+        raise RuntimeError(
+            f"You have to be logged in to be able to create {obj_type} objects"
+        )
     return api
 
 
@@ -45,24 +50,26 @@ class _BaseObject(object):
         # TODO: Remove the try/except statement and properly handle cases where objects are not found
         # TODO: Fix `datasets` route since that only returns non-analysis objects
         try:
-            objects = getattr(self.connection, obj_type + 's')()
+            objects = getattr(self.connection, obj_type + "s")()
         except:
             return (obj_id, str(obj_id))
         matched_objects = []
         for obj in objects:
             # Special case here since we use both 'name' and 'title' for object names
-            if 'name' in obj:
-                if obj_id == obj['name'] or obj_id == obj['id']:
-                    matched_objects.append((obj['id'], obj['name']))
-            if 'title' in obj:
-                if obj_id == obj['title'] or obj_id == obj['id']:
-                    matched_objects.append((obj['id'], obj['title']))
+            if "name" in obj:
+                if obj_id == obj["name"] or obj_id == obj["id"]:
+                    matched_objects.append((obj["id"], obj["name"]))
+            if "title" in obj:
+                if obj_id == obj["title"] or obj_id == obj["id"]:
+                    matched_objects.append((obj["id"], obj["title"]))
         if len(matched_objects) == 0:
-            raise TypeError("%s is not found in your %ss." % (obj_id, obj_type))
+            raise TypeError(f"{obj_id} is not found in your {obj_type}s.")
         elif len(matched_objects) == 1:
             return matched_objects[0]
         else:
-            print("More than 1 match found. Defaulting to the first match: %s" % (matched_objects[0]))
+            print(
+                f"More than 1 match found. Defaulting to the first match: {matched_objects[0]}"
+            )
             return matched_objects[0]
 
 
@@ -107,7 +114,7 @@ class Project(_BaseObject):
         connection: Optional[transcriptic.config.Connection]
             Connection context. The default context object will be used unless explicitly provided
         """
-        super(Project, self).__init__('project', project_id, attributes, connection)
+        super(Project, self).__init__("project", project_id, attributes, connection)
         self._runs = pd.DataFrame()
 
     def runs(self, use_cache=True):
@@ -128,8 +135,8 @@ class Project(_BaseObject):
             temp = self.connection.env_args
             self.connection.update_environment(project_id=self.id)
             project_runs = self.connection.runs()
-            self._runs = pd.DataFrame([[pr['id'], pr['title']] for pr in project_runs])
-            self._runs.columns = ['id', 'Name']
+            self._runs = pd.DataFrame([[pr["id"], pr["title"]] for pr in project_runs])
+            self._runs.columns = ["id", "Name"]
             self.connection.env_args = temp
         return self._runs
 
@@ -151,8 +158,10 @@ class Project(_BaseObject):
         Run
             Returns a run object if run is successfully submitted
         """
-        response = self.connection.submit_run(protocol, project_id=self.id, title=title, test_mode=test_mode)
-        return Run(response['id'], response)
+        response = self.connection.submit_run(
+            protocol, project_id=self.id, title=title, test_mode=test_mode
+        )
+        return Run(response["id"], response)
 
 
 class Run(_BaseObject):
@@ -207,8 +216,8 @@ class Run(_BaseObject):
         timeout: Optional[float]
             Timeout in seconds (defaults to 30.0). This will be used when making API calls to fetch data associated with the run.
         """
-        super(Run, self).__init__('run', run_id, attributes, connection)
-        self.project_id = self.attributes['project']['id']
+        super(Run, self).__init__("run", run_id, attributes, connection)
+        self.project_id = self.attributes["project"]["id"]
         self.timeout = timeout
         self._data_ids = pd.DataFrame()
         self._instructions = pd.DataFrame()
@@ -228,28 +237,28 @@ class Run(_BaseObject):
         """
         if self._data_ids.empty:
             datasets = []
-            for dataset in self.attributes['datasets']:
-                inst_id = dataset['instruction_id']
+            for dataset in self.attributes["datasets"]:
+                inst_id = dataset["instruction_id"]
                 if inst_id:
                     titles = [
-                        inst.attributes['operation']['dataref'] for
-                        inst in self.instructions['Instructions']
-                        if inst.attributes['id'] == inst_id
+                        inst.attributes["operation"]["dataref"]
+                        for inst in self.instructions["Instructions"]
+                        if inst.attributes["id"] == inst_id
                     ]
                     if len(titles) == 0:
                         title = "unknown"
                     elif len(titles) == 1:
                         title = titles[0]
                     else:
-                    # This should never happen since instruction_ids are unique
+                        # This should never happen since instruction_ids are unique
                         raise ValueError("No unique instruction id found")
                 else:
-                    title = dataset['title']
+                    title = dataset["title"]
                 datasets.append(
                     {
                         "Name": title,
                         "DataType": dataset["data_type"],
-                        "Id": dataset["id"]
+                        "Id": dataset["id"],
                     }
                 )
             if len(datasets) > 0:
@@ -260,15 +269,31 @@ class Run(_BaseObject):
     @property
     def instructions(self):
         if self._instructions.empty:
-            instruction_list = [Instruction(dict(x, **{'project_id': self.project_id, 'run_id': self.id}),
-                                            connection=self.connection)
-                                for x in self.attributes["instructions"]]
+            instruction_list = [
+                Instruction(
+                    dict(x, **{"project_id": self.project_id, "run_id": self.id}),
+                    connection=self.connection,
+                )
+                for x in self.attributes["instructions"]
+            ]
             self._instructions = pd.DataFrame(instruction_list)
             self._instructions.columns = ["Instructions"]
-            self._instructions.insert(0, "Name", [inst.name for inst in self._instructions.Instructions])
-            self._instructions.insert(1, "Id", [inst.id for inst in self._instructions.Instructions])
-            self._instructions.insert(2, "Started", [inst.started_at for inst in self._instructions.Instructions])
-            self._instructions.insert(3, "Completed", [inst.completed_at for inst in self._instructions.Instructions])
+            self._instructions.insert(
+                0, "Name", [inst.name for inst in self._instructions.Instructions]
+            )
+            self._instructions.insert(
+                1, "Id", [inst.id for inst in self._instructions.Instructions]
+            )
+            self._instructions.insert(
+                2,
+                "Started",
+                [inst.started_at for inst in self._instructions.Instructions],
+            )
+            self._instructions.insert(
+                3,
+                "Completed",
+                [inst.completed_at for inst in self._instructions.Instructions],
+            )
         return self._instructions
 
     @property
@@ -292,11 +317,35 @@ class Run(_BaseObject):
                 container_list.append(Container(ref["container"]["id"]))
             self._containers = pd.DataFrame(container_list)
             self._containers.columns = ["Containers"]
-            self._containers.insert(0, "Name", [container.name for container in self._containers.Containers])
-            self._containers.insert(1, "ContainerId", [container.id for container in self._containers.Containers])
-            self._containers.insert(2, "Type", [container.container_type.shortname for container in self._containers.Containers])
-            self._containers.insert(3, "Status", [container.attributes["status"] for container in self._containers.Containers])
-            self._containers.insert(4, "Storage Condition", [container.storage for container in self._containers.Containers])
+            self._containers.insert(
+                0, "Name", [container.name for container in self._containers.Containers]
+            )
+            self._containers.insert(
+                1,
+                "ContainerId",
+                [container.id for container in self._containers.Containers],
+            )
+            self._containers.insert(
+                2,
+                "Type",
+                [
+                    container.container_type.shortname
+                    for container in self._containers.Containers
+                ],
+            )
+            self._containers.insert(
+                3,
+                "Status",
+                [
+                    container.attributes["status"]
+                    for container in self._containers.Containers
+                ],
+            )
+            self._containers.insert(
+                4,
+                "Storage Condition",
+                [container.storage for container in self._containers.Containers],
+            )
         return self._containers
 
     @property
@@ -332,20 +381,26 @@ class Run(_BaseObject):
                     data_list = []
                     for name, data_type, data_id in self.data_ids.values:
                         dataset = Dataset(data_id)
-                        data_list.append({
-                            "Name": name,
-                            "DataType": data_type,
-                            "Operation": dataset.operation,
-                            "AnalysisTool": dataset.analysis_tool,
-                            "Datasets": dataset
-                        })
+                        data_list.append(
+                            {
+                                "Name": name,
+                                "DataType": data_type,
+                                "Operation": dataset.operation,
+                                "AnalysisTool": dataset.analysis_tool,
+                                "Datasets": dataset,
+                            }
+                        )
                     data_frame = pd.DataFrame(data_list)
 
                     # Rearrange columns
-                    self._data = data_frame[["Name", "DataType", "Operation",
-                                             "AnalysisTool", "Datasets"]]
+                    self._data = data_frame[
+                        ["Name", "DataType", "Operation", "AnalysisTool", "Datasets"]
+                    ]
                 except ReadTimeout:
-                    print('Operation timed out after %d seconds. Returning data_ids instead of Datasets.\nTo try again, increase value of self.timeout and resubmit request.' % self.timeout)
+                    print(
+                        "Operation timed out after %d seconds. Returning data_ids instead of Datasets.\nTo try again, increase value of self.timeout and resubmit request."
+                        % self.timeout
+                    )
                     return self.data_ids
         return self._data
 
@@ -362,13 +417,14 @@ class Run(_BaseObject):
         try:
             return self.data.Datasets
         except Exception:
-            print('Unable to load Datasets successfully. Returning empty series.')
+            print("Unable to load Datasets successfully. Returning empty series.")
             return pd.Series()
 
     def _repr_html_(self):
         return """<iframe src="%s" frameborder="0" allowtransparency="true" \
-        style="height:450px" seamless></iframe>""" % \
-               self.connection.get_route('view_run', project_id=self.project_id, run_id=self.id)
+        style="height:450px" seamless></iframe>""" % self.connection.get_route(
+            "view_run", project_id=self.project_id, run_id=self.id
+        )
 
 
 class Dataset(_BaseObject):
@@ -414,7 +470,7 @@ class Dataset(_BaseObject):
         connection: Optional[transcriptic.config.Connection]
             Connection context. The default context object will be used unless explicitly provided
         """
-        super(Dataset, self).__init__('dataset', data_id, attributes, connection)
+        super(Dataset, self).__init__("dataset", data_id, attributes, connection)
         # TODO: Get BaseObject to handle dataset name
         self.name = self.attributes["title"]
         self.id = data_id
@@ -425,12 +481,14 @@ class Dataset(_BaseObject):
         except KeyError:
             self.operation = None
         try:
-            self.container = Container(self.attributes["container"]["id"],
-                                       attributes=self.attributes["container"],
-                                       connection=connection)
+            self.container = Container(
+                self.attributes["container"]["id"],
+                attributes=self.attributes["container"],
+                connection=connection,
+            )
         except KeyError as e:
-            if 'instruction' in self.attributes:
-                warnings.warn("Missing key {} when initializing dataset".format(e))
+            if "instruction" in self.attributes:
+                warnings.warn(f"Missing key {e} when initializing dataset")
             self.container = None
 
         self.analysis_tool = self.attributes["analysis_tool"]
@@ -461,7 +519,9 @@ class Dataset(_BaseObject):
             try:
                 self._data = pd.DataFrame(self.raw_data)
             except:
-                raise RuntimeError("Failed to cast data as DataFrame. Try using raw_data property instead.")
+                raise RuntimeError(
+                    "Failed to cast data as DataFrame. Try using raw_data property instead."
+                )
             self._data.columns = [x.upper() for x in self._data.columns]
         if key == "*":
             return self._data
@@ -480,7 +540,9 @@ class Dataset(_BaseObject):
         indices_without_data = []
         # Print a warning if new column will overwrite existing column
         if "Aliquot Data" in aliquot_data.columns.values.tolist():
-            warnings.warn("Column 'Aliquot Data' will be overwritten with data pulled from Dataset.")
+            warnings.warn(
+                "Column 'Aliquot Data' will be overwritten with data pulled from Dataset."
+            )
         # Look up data for every well index
         for index in aliquot_data.index:
             # Get humanized index
@@ -496,7 +558,10 @@ class Dataset(_BaseObject):
             data_column.append(data_point)
         # Print a list of well indices that do not have corresponding data keys
         if len(indices_without_data) > 0:
-            warnings.warn("The following indices were not found as data keys: %s" % ", ".join(indices_without_data))
+            warnings.warn(
+                "The following indices were not found as data keys: %s"
+                % ", ".join(indices_without_data)
+            )
         # Add these data as a column to the DataFrame
         aliquot_data["Aliquot Data"] = data_column
 
@@ -504,8 +569,9 @@ class Dataset(_BaseObject):
 
     def _repr_html_(self):
         return """<iframe src="%s" frameborder="0" allowtransparency="true" \
-            style="height:400px; width:450px" seamless></iframe>""" % \
-               self.connection.get_route('view_data', data_id=self.id)
+            style="height:400px; width:600px" seamless></iframe>""" % self.connection.get_route(
+            "view_data", data_id=self.id
+        )
 
 
 class DataObject(object):
@@ -557,19 +623,19 @@ class DataObject(object):
     def __init_attrs(self, attributes):
         self.attributes = attributes
 
-        self.id = attributes.get('id')
-        self.dataset_id = attributes.get('dataset_id')
-        self.content_type = attributes.get('content_type')
-        self.format = attributes.get('format')
-        self.name = attributes.get('name')
-        self.size = attributes.get('size')
-        self.status = attributes.get('status')
-        self.url = attributes.get('url')
-        self.validation_errors = attributes.get('validation_errors')
+        self.id = attributes.get("id")
+        self.dataset_id = attributes.get("dataset_id")
+        self.content_type = attributes.get("content_type")
+        self.format = attributes.get("format")
+        self.name = attributes.get("name")
+        self.size = attributes.get("size")
+        self.status = attributes.get("status")
+        self.url = attributes.get("url")
+        self.validation_errors = attributes.get("validation_errors")
 
     @staticmethod
     def fetch_attributes(data_object_id):
-        connection = _check_api('data_objects')
+        connection = _check_api("data_objects")
         return connection.data_object(data_object_id)
 
     @staticmethod
@@ -585,7 +651,7 @@ class DataObject(object):
 
     @staticmethod
     def init_from_dataset_id(data_object_id):
-        connection = _check_api('data_objects')
+        connection = _check_api("data_objects")
 
         # array of attributes
         attributes_arr = connection.data_objects(data_object_id)
@@ -615,7 +681,7 @@ class DataObject(object):
 
     @property
     def data_str(self):
-        return self.data.decode('utf-8')
+        return self.data.decode("utf-8")
 
     @property
     def json(self):
@@ -628,14 +694,14 @@ class DataObject(object):
 
     def dataframe(self):
         """Creates a simple Pandas Dataframe"""
-        if self.format == 'csv' or self.content_type == 'text/csv':
+        if self.format == "csv" or self.content_type == "text/csv":
             return pd.read_csv(StringIO(self.data_str))
         else:
             return pd.DataFrame(self.json)
 
     def save_data(self, filepath, chunk_size=1024):
         """Save DataObject data to a file.  Useful for large files"""
-        with open(filepath, 'wb') as f:
+        with open(filepath, "wb") as f:
             if self._data:
                 f.write(self._data)
                 return
@@ -709,11 +775,15 @@ class Instruction(object):
         self.started_at = attributes["started_at"]
         self.completed_at = attributes["completed_at"]
         if len(attributes["warps"]) > 0:
-            device_id_set = set([warp["device_id"] for warp in self.attributes["warps"]])
+            device_id_set = set(
+                [warp["device_id"] for warp in self.attributes["warps"]]
+            )
             self.device_id = device_id_set.pop()
             if len(device_id_set) > 1:
-                warnings.warn("There is more than one device involved in this instruction. Please contact "
-                              "Transcriptic for assistance.")
+                warnings.warn(
+                    "There is more than one device involved in this instruction. Please contact "
+                    "Transcriptic for assistance."
+                )
 
         else:
             self.device_id = None
@@ -725,33 +795,41 @@ class Instruction(object):
         if self._warps.empty:
             warp_list = self.attributes["warps"]
             if len(warp_list) != 0:
-                self._warps = pd.DataFrame(x['command'] for x in warp_list)
+                self._warps = pd.DataFrame(x["command"] for x in warp_list)
                 self._warps.columns = [x.title() for x in self._warps.columns.tolist()]
                 # Rearrange columns to start with `Name`
                 if "Name" in self._warps.columns:
-                    col_names = ["Name"] + [col for col in self._warps.columns if col != "Name"]
+                    col_names = ["Name"] + [
+                        col for col in self._warps.columns if col != "Name"
+                    ]
                     self._warps = self._warps[col_names]
                 self._warps.insert(1, "WarpId", [x["id"] for x in warp_list])
-                self._warps.insert(2, "Completed", [x["reported_completed_at"] for x in warp_list])
-                self._warps.insert(3, "Started", [x["reported_started_at"] for x in warp_list])
+                self._warps.insert(
+                    2, "Completed", [x["reported_completed_at"] for x in warp_list]
+                )
+                self._warps.insert(
+                    3, "Started", [x["reported_started_at"] for x in warp_list]
+                )
             else:
-                warnings.warn("There are no warps associated with this instruction. Please contact "
-                              "Transcriptic for assistance.")
+                warnings.warn(
+                    "There are no warps associated with this instruction. Please contact "
+                    "Transcriptic for assistance."
+                )
         return self._warps
 
     @property
     def warp_events(self):
         """
-        Warp events include discrete monitoring events such as liquid sensing 
+        Warp events include discrete monitoring events such as liquid sensing
         events for a particular instruction.
         """
         # Note: We may consider adding special classes for specific warp
         # events, with more specific annotations/fields.
         if self._warp_events.empty:
-            self._warp_events = self.monitoring(data_type='events')
+            self._warp_events = self.monitoring(data_type="events")
         return self._warp_events
 
-    def monitoring(self, data_type='pressure', grouping=None):
+    def monitoring(self, data_type="pressure", grouping=None):
         """
         View monitoring data of a given instruction
 
@@ -769,15 +847,13 @@ class Instruction(object):
             Returns an empty dataframe if no data can be found due to errors.
         """
         response = self.connection.monitoring_data(
-            instruction_id=self.id,
-            data_type=data_type,
-            grouping=grouping
+            instruction_id=self.id, data_type=data_type, grouping=grouping
         )
         # Handle errors by returning empty dataframe
         if "error" in response:
             warnings.warn(response["error"])
             return pd.DataFrame()
-        res = pd.DataFrame(response['results'])
+        res = pd.DataFrame(response["results"])
         # re-order so that "name" column is always leading
         if "name" in res.columns:
             rearr_cols = ["name"] + res.columns[res.columns != "name"].tolist()
@@ -786,9 +862,12 @@ class Instruction(object):
 
     def _repr_html_(self):
         return """<iframe src="%s" frameborder="0" allowtransparency="true" \
-            style="width:450px" seamless></iframe>""" % \
-               self.connection.get_route('view_instruction', run_id=self.attributes["run_id"],
-                                         project_id=self.attributes["project_id"], instruction_id=self.id)
+            style="width:450px" seamless></iframe>""" % self.connection.get_route(
+            "view_instruction",
+            run_id=self.attributes["run_id"],
+            project_id=self.attributes["project_id"],
+            instruction_id=self.id,
+        )
 
 
 class Container(_BaseObject):
@@ -854,14 +933,18 @@ class Container(_BaseObject):
         connection: Optional[transcriptic.config.Connection]
             Connection context. The default context object will be used unless explicitly provided
         """
-        super(Container, self).__init__('container', container_id, attributes, connection)
+        super(Container, self).__init__(
+            "container", container_id, attributes, connection
+        )
         # TODO: Unify container "label" with name, add Containers route
         self.id = container_id
         self.cover = self.attributes["cover"]
         self.name = self.attributes["label"]
         self.storage = self.attributes["storage_condition"]
-        self.well_map = {aliquot["well_idx"]: aliquot["name"]
-                         for aliquot in self.attributes["aliquots"]}
+        self.well_map = {
+            aliquot["well_idx"]: aliquot["name"]
+            for aliquot in self.attributes["aliquots"]
+        }
         self.container_type = self._parse_container_type()
         self._aliquots = pd.DataFrame()
 
@@ -874,9 +957,12 @@ class Container(_BaseObject):
         # the current and future dictionary when instantiating container_type
         try:
             from autoprotocol.container_type import _CONTAINER_TYPES
+
             return _CONTAINER_TYPES[container_type["shortname"]]
         except ImportError:
-            raise warnings.warn("Please install `autoprotocol-python` in order to get container types")
+            warnings.warn(
+                "Please install `autoprotocol-python` in order to get container types"
+            )
             return None
         except KeyError:
             warnings.warn("ContainerType given is not supported yet in AP-Py")
@@ -894,15 +980,46 @@ class Container(_BaseObject):
             aliquot_list = self.attributes["aliquots"]
             try:
                 from autoprotocol import Unit
-                self._aliquots = pd.DataFrame(sorted([dict({'Well Index': x['well_idx'], 'Name': x['name'], 'Id': x['id'],
-                                                 'Volume': Unit(float(x['volume_ul']), 'microliter')}, **x['properties'])
-                                           for x in aliquot_list], key=itemgetter('Well Index')))
+
+                self._aliquots = pd.DataFrame(
+                    sorted(
+                        [
+                            dict(
+                                {
+                                    "Well Index": x["well_idx"],
+                                    "Name": x["name"],
+                                    "Id": x["id"],
+                                    "Volume": Unit(float(x["volume_ul"]), "microliter"),
+                                },
+                                **x["properties"],
+                            )
+                            for x in aliquot_list
+                        ],
+                        key=itemgetter("Well Index"),
+                    )
+                )
             except ImportError:
-                warnings.warn("Volume is not cast into Unit-type. Please install `autoprotocol-python` in order to have automatic Unit casting")
-                self._aliquots = pd.DataFrame(sorted([dict({'Well Index': x['well_idx'], 'Name': x['name'], 'Id': x['id'],
-                                                 'Volume': float(x['volume_ul'])}, **x['properties'])
-                                           for x in aliquot_list], key=itemgetter('Well Index')))
-            indices = self._aliquots.pop('Well Index')
+                warnings.warn(
+                    "Volume is not cast into Unit-type. Please install `autoprotocol-python` in order to have automatic Unit casting"
+                )
+                self._aliquots = pd.DataFrame(
+                    sorted(
+                        [
+                            dict(
+                                {
+                                    "Well Index": x["well_idx"],
+                                    "Name": x["name"],
+                                    "Id": x["id"],
+                                    "Volume": float(x["volume_ul"]),
+                                },
+                                **x["properties"],
+                            )
+                            for x in aliquot_list
+                        ],
+                        key=itemgetter("Well Index"),
+                    )
+                )
+            indices = self._aliquots.pop("Well Index")
             self._aliquots.set_index(indices, inplace=True)
         return self._aliquots
 

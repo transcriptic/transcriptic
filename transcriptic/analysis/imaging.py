@@ -5,8 +5,10 @@ from transcriptic import api
 try:
     from PIL import Image
 except ImportError:
-    raise ImportError("Please run `pip install transcriptic[analysis] if you "
-                      "would like to use the Transcriptic analysis module.")
+    raise ImportError(
+        "Please run `pip install transcriptic[analysis] if you "
+        "would like to use the Transcriptic analysis module."
+    )
 
 
 class ImagePlate(object):
@@ -28,7 +30,7 @@ class ImagePlate(object):
     """
 
     def __init__(self, dataset):
-        if (dataset.attributes["instruction"]["operation"]["op"] != "image_plate"):
+        if dataset.attributes["instruction"]["operation"]["op"] != "image_plate":
             raise RuntimeError("No image_plate operation found for given dataset.")
         self.id = dataset.id
         self.raw = BytesIO()
@@ -54,9 +56,13 @@ class ImagePlate(object):
         try:
             # pylint: disable=import-error
             from IPython.display import HTML
-            return (HTML("""<iframe src="%s")" frameborder="0" \
+
+            return HTML(
+                """<iframe src="%s")" frameborder="0" \
                 allowtransparency="true" style="height:500px;" seamless> \
-                </iframe>""" % api.get_route('view_raw_image', data_id=self.id)))
+                </iframe>"""
+                % api.get_route("view_raw_image", data_id=self.id)
+            )
 
         except:
             # If IPython module is not present or unable to show, display using

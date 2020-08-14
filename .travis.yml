@@ -1,8 +1,47 @@
+dist: bionic
 sudo: false
 language: python
-python:
-    - "3.5"
-    - "3.6"
-    - "3.7"
-install: pip install tox-travis
-script: tox
+jobs:
+  include:
+  - python: '3.6'
+    env: TOXENV=docs
+  - python: '3.6'
+    env: TOXENV=lint
+  - python: '3.6'
+    env: TOXENV=clean,py36,stats
+  - python: '3.7'
+    env: TOXENV=py37
+  - python: '3.8'
+    env: TOXENV=py38
+install:
+- pip install tox
+script:
+- tox -v
+after_failure:
+- more .tox/log/* | cat
+- more .tox/*/log/* | cat
+before_deploy:
+- python setup.py sdist
+- python setup.py bdist_wheel
+deploy:
+- provider: releases
+  skip_cleanup: true
+  file: dist/*
+  file_glob: true
+  api_key:
+    secure: 'QYPnx6ABhKhhCCTNEsDCIQ9PrjOXO8ZydrswljVQEjgVDNMSx4FBB586sYeBa8K37b6QOYvGSKM9dZGtKj5+ip1FfgyxICYQWw6LCRT0XdqBB2lXbK9mAErGZbHmx8EQP/xcZ9d+Ta0QpmY1vFbpGWrK+xFCiqKgPHROLQxE2C5bK106bacms4WeRnW/CFaD1qLNtZOYhzehfd2t+tDRN03Mx7aBMsaZLwYLDg4VuvngRsXCtWF7RBwKObcQ6js9HZ+km/R5PE5QSy8FlWy7UKnu/qZ40Ulg7OERx8Q/Kp6ETtAwkW1Fb8BuzbStM/3bPaoQiuBJ2/TBs3mttnUhSGfEJ8ZmlJR7xEpqZ89Il884p+kORAnHwe4JReKvEbSyl/IyG67kOTnfBCoc0KW0qmoLrsqBRo8i35K4i4xQu8H2c0F8g/KXMd6dzKqIjc3flPlAieFl0RVbXNdBe5sD6QkPRXzFGHV23nBsSJkUlVcMcI00xd8x4FlD6cihp1UDsW//LbQArvAXBxw2uJLFZFa5WS2PMU/iENZ8GluJyD/Q277fMN1Jha+fab1G0D8ZQZvj1emZim13zOQ/cREWf9DFjkxBYPpDK5BTQtaUtaHyIhZQS8r/yFJJeDaBr6drNzHB6PYO6ZcufeIqcx7QNVCpdOhRFVYyuqvRZBAOcok='
+  on:
+    repo: strateos/transcriptic
+    tags: true
+    python: '3.6'
+    condition: '$TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+$'
+- provider: pypi
+  skip_cleanup: true
+  username: '__token__'
+  password:
+    secure: 'bRqO8QTJkrYxXtfnqWLvE5KfE3UX3OSwuPENK1narMDK1L36T4y4Yvo1t+c33fRmBHeqlSIDNFiYJZ0Xx+Vh2SdvWghrMUYeRCZQLCRtKmTyfIP5CDUxUEA2FXkQJvHjbWxGUhEX9K3JaGuX/M+0FGOQr2pgfV8hGaqdzaFzGzRCYRCRYIrxnCk2EXuVIaKWnORs58ZszOYGp8rzeH0Cta6jRlcKwsukRFLSjSbBNkJruxLMvfmAuV/eoUVSRNBMD2e23l8pgAAVAVHt6j5vf1MpZUsK4U32wJzKdpcCku/1FjjDudNaMRkKRBYnO2blS/YK7eeRwgs3eBB8dejq7vf/pTW33WPc4SCKDuvAVWvP/gTTp9SYsXFD6xPj2o85K0tlB+Ww+Cm5TPhmWRgY0wmY15JdMMnq0zn6GDq7RhcaDlsRyn65oJScpw4yt9pst5CAw3A9V9xnbWsUWCNb9909SqmYwGWEbT+beHIpY/4Chghqqq0EiUzBHu+EQgrVckM3xFUXwQk6kxSdTGQ/tVpsX+PFLDBQ3axoopuCgnCxRvDCYBE6ZRlEXR4A8/EjcZbYCze384o/yLbXSSZ0WEcyIH1jZJblG+Nz1BWZSjSTaVwezghrTwIWn9qud0QmiJOdvzXfyDBBVzmfDwleHaQb99unx6TFLUme0Mql1xE='
+  edge: true
+  on:
+    tags: true
+    python: '3.6'
+    condition: '$TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+$'

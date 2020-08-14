@@ -1,63 +1,63 @@
 {
   "refs": {
     "test_plate": {
-      "new": "96-pcr", 
+      "new": "96-pcr",
       "discard": true
     }
-  }, 
+  },
   "instructions": [
     {
-      "dataref": "test_ref", 
+      "dataref": "test_ref",
       "channels": {
         "FSC": {
-          "area": true, 
+          "area": true,
           "voltage_range": {
-            "high": "280:volt", 
+            "high": "280:volt",
             "low": "230:volt"
-          }, 
-          "weight": false, 
+          },
+          "weight": false,
           "height": true
-        }, 
+        },
         "SSC": {
-          "area": true, 
+          "area": true,
           "voltage_range": {
-            "high": "280:volt", 
+            "high": "280:volt",
             "low": "230:volt"
-          }, 
-          "weight": false, 
+          },
+          "weight": false,
           "height": true
         }
-      }, 
-      "op": "flow_analyze", 
+      },
+      "op": "flow_analyze",
       "samples": [
         {
-          "volume": "100:microliter", 
-          "captured_events": 9, 
+          "volume": "100:microliter",
+          "captured_events": 9,
           "well": "test_plate/0"
         }
-      ], 
+      ],
       "negative_controls": [
         {
-          "volume": "100:microliter", 
-          "captured_events": 5, 
-          "well": "test_plate/0", 
+          "volume": "100:microliter",
+          "captured_events": 5,
+          "well": "test_plate/0",
           "channel": [
             {
-              "area": true, 
+              "area": true,
               "voltage_range": {
-                "high": "280:volt", 
+                "high": "280:volt",
                 "low": "230:volt"
-              }, 
-              "weight": false, 
+              },
+              "weight": false,
               "height": true
-            }, 
+            },
             {
-              "area": true, 
+              "area": true,
               "voltage_range": {
-                "high": "280:volt", 
+                "high": "280:volt",
                 "low": "230:volt"
-              }, 
-              "weight": false, 
+              },
+              "weight": false,
               "height": true
             }
           ]

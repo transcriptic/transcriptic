@@ -25,20 +25,22 @@ class MockResponse(object):
         return self._json
 
 
-
-
 def _req_call(method, route, **kwargs):
     key = (method, route)
     if key in mockDB:
-        if len(mockDB[key]['call_queue']) == 0:
-            if mockDB[key]['default']:
-                return mockDB[key]['default']
+        if len(mockDB[key]["call_queue"]) == 0:
+            if mockDB[key]["default"]:
+                return mockDB[key]["default"]
             else:
-                raise RuntimeError("Method: {method}, Route: {route} has run out of max calls.")
+                raise RuntimeError(
+                    "Method: {method}, Route: {route} has run out of max calls."
+                )
         else:
-            return mockDB[key]['call_queue'].popleft()
+            return mockDB[key]["call_queue"].popleft()
     else:
-        raise RuntimeError("Method: {method} and Route: {route} needs to be mocked.".format(**locals()))
+        raise RuntimeError(
+            "Method: {method} and Route: {route} needs to be mocked.".format(**locals())
+        )
 
 
 def mockRoute(method, route, response, max_calls=None):
@@ -47,9 +49,9 @@ def mockRoute(method, route, response, max_calls=None):
     key = (method, route)
     if key not in mockDB:
         mockDB[key] = {}
-        mockDB[key]['default'] = None
-        mockDB[key]['call_queue'] = deque()
+        mockDB[key]["default"] = None
+        mockDB[key]["call_queue"] = deque()
     if max_calls:
-        mockDB[key]['call_queue'].extend([response] * max_calls)
+        mockDB[key]["call_queue"].extend([response] * max_calls)
     else:
-        mockDB[key]['default'] = response
+        mockDB[key]["default"] = response

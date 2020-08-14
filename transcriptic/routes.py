@@ -56,7 +56,9 @@ def launch_protocol(api_root, org_id, protocol_id):
 
 
 def get_launch_request(api_root, org_id, protocol_id, launch_request_id):
-    return "{api_root}/{org_id}/protocols/{protocol_id}/launch/{launch_request_id}".format(**locals())
+    return "{api_root}/{org_id}/protocols/{protocol_id}/launch/{launch_request_id}".format(
+        **locals()
+    )
 
 
 def post_release(api_root, org_id, package_id):
@@ -64,11 +66,15 @@ def post_release(api_root, org_id, package_id):
 
 
 def get_release_status(api_root, org_id, package_id, release_id, timestamp):
-    return "{api_root}/{org_id}/packages/{package_id}/releases/{release_id}?_={timestamp}".format(**locals())
+    return "{api_root}/{org_id}/packages/{package_id}/releases/{release_id}?_={timestamp}".format(
+        **locals()
+    )
 
 
 def query_kits(api_root, query):
-    return "{api_root}/_commercial/kits?q={query}&per_page=1000&full_json=true".format(**locals())
+    return "{api_root}/_commercial/kits?q={query}&per_page=1000&full_json=true".format(
+        **locals()
+    )
 
 
 def query_resources(api_root, query):
@@ -76,11 +82,15 @@ def query_resources(api_root, query):
 
 
 def query_inventory(api_root, org_id, query, page=0):
-    return "{api_root}/{org_id}/inventory/samples?q={query}&per_page=75&page={page}".format(**locals())
+    return "{api_root}/{org_id}/inventory/samples?q={query}&per_page=75&page={page}".format(
+        **locals()
+    )
 
 
 def get_quick_launch(api_root, org_id, project_id, quick_launch_id):
-    return "{api_root}/{org_id}/{project_id}/runs/quick_launch/{quick_launch_id}".format(**locals())
+    return "{api_root}/{org_id}/{project_id}/runs/quick_launch/{quick_launch_id}".format(
+        **locals()
+    )
 
 
 def create_quick_launch(api_root, org_id, project_id):
@@ -88,8 +98,10 @@ def create_quick_launch(api_root, org_id, project_id):
 
 
 def resolve_quick_launch_inputs(api_root, org_id, project_id, quick_launch_id):
-    return "{api_root}/{org_id}/{project_id}/runs/quick_launch/" \
-           "{quick_launch_id}/resolve_inputs".format(**locals())
+    return (
+        "{api_root}/{org_id}/{project_id}/runs/quick_launch/"
+        "{quick_launch_id}/resolve_inputs".format(**locals())
+    )
 
 
 def login(api_root):
@@ -141,7 +153,9 @@ def data_object(api_root, id):
 
 
 def data_objects(api_root, dataset_id):
-    return "{api_root}/api/data_objects?filter[dataset_id]={dataset_id}".format(**locals())
+    return "{api_root}/api/data_objects?filter[dataset_id]={dataset_id}".format(
+        **locals()
+    )
 
 
 def get_uploads(api_root, key):
@@ -177,7 +191,9 @@ def view_run(api_root, org_id, project_id, run_id):
 
 
 def view_instruction(api_root, org_id, project_id, run_id, instruction_id):
-    return "{api_root}/{org_id}/{project_id}/runs/{run_id}/instructions/{instruction_id}.embed".format(**locals())
+    return "{api_root}/{org_id}/{project_id}/runs/{run_id}/instructions/{instruction_id}.embed".format(
+        **locals()
+    )
 
 
 def view_raw_image(api_root, data_id):
@@ -188,8 +204,12 @@ def get_data_zip(api_root, data_id):
     return "{api_root}/-/{data_id}.zip".format(**locals())
 
 
-def monitoring_data(api_root, data_type, instruction_id, grouping=None, start_time=None, end_time=None):
-    base_route = "{api_root}/sensor_data/{data_type}?instruction_id={instruction_id}".format(**locals())
+def monitoring_data(
+    api_root, data_type, instruction_id, grouping=None, start_time=None, end_time=None
+):
+    base_route = "{api_root}/sensor_data/{data_type}?instruction_id={instruction_id}".format(
+        **locals()
+    )
     if grouping:
         base_route += "&grouping={grouping}".format(**locals())
     if start_time:

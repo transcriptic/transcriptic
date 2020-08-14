@@ -1,134 +1,134 @@
 {
   "refs": {
     "pcr_6": {
-      "new": "96-pcr", 
+      "new": "96-pcr",
       "store": {
         "where": "cold_20"
       }
-    }, 
+    },
     "pcr_5": {
-      "new": "96-pcr", 
+      "new": "96-pcr",
       "store": {
         "where": "cold_20"
       }
-    }, 
+    },
     "pcr_4": {
-      "new": "96-pcr", 
+      "new": "96-pcr",
       "store": {
         "where": "cold_20"
       }
-    }, 
+    },
     "pcr_3": {
-      "new": "96-pcr", 
+      "new": "96-pcr",
       "store": {
         "where": "cold_20"
       }
-    }, 
+    },
     "pcr_2": {
-      "new": "96-pcr", 
+      "new": "96-pcr",
       "store": {
         "where": "cold_20"
       }
-    }, 
+    },
     "pcr_1": {
-      "new": "96-pcr", 
+      "new": "96-pcr",
       "store": {
         "where": "cold_20"
       }
-    }, 
+    },
     "pcr_0": {
-      "new": "96-pcr", 
+      "new": "96-pcr",
       "store": {
         "where": "cold_20"
       }
-    }, 
+    },
     "test": {
-      "new": "96-flat", 
+      "new": "96-flat",
       "discard": true
     }
-  }, 
+  },
   "instructions": [
     {
       "groups": [
         [
           {
             "release": {
-              "duration": "30.0:second", 
-              "object": "pcr_0", 
-              "frequency": "1.0:hertz", 
-              "center": 0.05, 
+              "duration": "30.0:second",
+              "object": "pcr_0",
+              "frequency": "1.0:hertz",
+              "center": 0.05,
               "amplitude": 0
             }
           }
         ]
-      ], 
-      "magnetic_head": "96-pcr", 
+      ],
+      "magnetic_head": "96-pcr",
       "op": "magnetic_transfer"
-    }, 
+    },
     {
       "groups": [
         {
           "distribute": {
             "to": [
               {
-                "volume": "30.0:microliter", 
+                "volume": "30.0:microliter",
                 "well": "test/7"
-              }, 
+              },
               {
-                "volume": "30.0:microliter", 
+                "volume": "30.0:microliter",
                 "well": "test/8"
-              }, 
+              },
               {
-                "volume": "30.0:microliter", 
+                "volume": "30.0:microliter",
                 "well": "test/9"
               }
-            ], 
-            "from": "test/1", 
+            ],
+            "from": "test/1",
             "allow_carryover": true
           }
-        }, 
+        },
         {
           "distribute": {
             "to": [
               {
-                "volume": "30.0:microliter", 
+                "volume": "30.0:microliter",
                 "well": "test/10"
               }
-            ], 
-            "from": "test/2", 
+            ],
+            "from": "test/2",
             "allow_carryover": true
           }
-        }, 
+        },
         {
           "distribute": {
             "to": [
               {
-                "volume": "5.0:microliter", 
+                "volume": "5.0:microliter",
                 "well": "test/1"
               }
-            ], 
-            "from": "test/0", 
+            ],
+            "from": "test/0",
             "allow_carryover": false
           }
         }
-      ], 
+      ],
       "op": "pipette"
-    }, 
+    },
     {
       "groups": [
         [
           {
             "incubate": {
-              "duration": "30.0:minute", 
-              "tip_position": 1.5, 
-              "object": "pcr_0", 
-              "magnetize": false, 
+              "duration": "30.0:minute",
+              "tip_position": 1.5,
+              "object": "pcr_0",
+              "magnetize": false,
               "temperature": "30.0:celsius"
             }
           }
         ]
-      ], 
-      "magnetic_head": "96-pcr", 
+      ],
+      "magnetic_head": "96-pcr",
       "op": "magnetic_transfer"
     }
   ]

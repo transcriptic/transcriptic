@@ -3,8 +3,10 @@ try:
     import plotly.graph_objs as go
     import pandas as pd
 except ImportError:
-    raise ImportError("Please run `pip install transcriptic[analysis] if you "
-                      "would like to use the Transcriptic analysis module.")
+    raise ImportError(
+        "Please run `pip install transcriptic[analysis] if you "
+        "would like to use the Transcriptic analysis module."
+    )
 
 
 class _Kinetics(object):
@@ -15,10 +17,13 @@ class _Kinetics(object):
     datasets: List[dataset]
         List of Datasets
     """
+
     def __init__(self, datasets):
         self.datasets = datasets
         self.readings = pd.concat([ds.data for ds in datasets])
-        self.readings.index = pd.to_datetime([ds.attributes["warp"]["completed_at"] for ds in datasets])
+        self.readings.index = pd.to_datetime(
+            [ds.attributes["warp"]["completed_at"] for ds in datasets]
+        )
         self.readings = self.readings.transpose()
 
 
@@ -36,6 +41,7 @@ class Spectrophotometry(_Kinetics):
         Operation used for generating these growth curves (e.g. Absorbance)
 
     """
+
     def __init__(self, datasets):
         """
         Parameters
@@ -49,26 +55,54 @@ class Spectrophotometry(_Kinetics):
             raise RuntimeError("Input Datasets must all be of the same type.")
         self.operation = operation_set.pop()
         if self.operation not in ["absorbance", "fluorescence", "luminescence"]:
-            raise RuntimeError("%s has to be of type absorbance, fluorescence or luminescence" % self.operation)
+            raise RuntimeError(
+                f"{self.operation} has to be of type absorbance, "
+                f"fluorescence or luminescence"
+            )
         super(Spectrophotometry, self).__init__(datasets)
         # Assume that well names are consistent across all runs
         ref_dataset = datasets[0]
         ref_container = ref_dataset.container
         # Check if well_map is defined
         if len(ref_container.well_map) != 0:
-            self.properties = pd.DataFrame.from_dict(ref_container.well_map, orient='index')
+            self.properties = pd.DataFrame.from_dict(
+                ref_container.well_map, orient="index"
+            )
         else:
-            self.properties = pd.DataFrame.from_dict({ref_container.container_type.robotize(x): x
-                                                      for x in ref_dataset.data.columns
-                                                      if x not in ["GAIN"]},
-                                                     orient='index')
-        self.properties.columns = ['name']
-        self.properties.insert(1, "column", (self.properties.index % ref_container.container_type.col_count))
-        self.properties.insert(1, "row", (self.properties.index // ref_container.container_type.col_count))
-        self.properties.row = self.properties.row.apply(lambda x: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[x])
-        self.properties.index = [ref_container.container_type.humanize(int(x)) for x in list(self.properties.index)]
+            self.properties = pd.DataFrame.from_dict(
+                {
+                    ref_container.container_type.robotize(x): x
+                    for x in ref_dataset.data.columns
+                    if x not in ["GAIN"]
+                },
+                orient="index",
+            )
+        self.properties.columns = ["name"]
+        self.properties.insert(
+            1,
+            "column",
+            (self.properties.index % ref_container.container_type.col_count),
+        )
+        self.properties.insert(
+            1, "row", (self.properties.index // ref_container.container_type.col_count)
+        )
+        self.properties.row = self.properties.row.apply(
+            lambda x: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[x]
+        )
+        self.properties.index = [
+            ref_container.container_type.humanize(int(x))
+            for x in list(self.properties.index)
+        ]
 
-    def plot(self, wells="*", groupby=None, title=None, xlabel=None, ylabel=None, max_legend_len=20):
+    def plot(
+        self,
+        wells="*",
+        groupby=None,
+        title=None,
+        xlabel=None,
+        ylabel=None,
+        max_legend_len=20,
+    ):
         """
         This generates a plot of the kinetics curve. Note that this function is meant for use under a Jupyter notebook
         environment
@@ -119,12 +153,20 @@ class Spectrophotometry(_Kinetics):
             well_readings = self.readings.loc[wells]
 
         if not groupby:
-            traces = [go.Scatter(x=self.readings.columns, y=well_readings.loc[well],
-                                 name=self.properties["name"].loc[well]) for well in wells]
+            traces = [
+                go.Scatter(
+                    x=self.readings.columns,
+                    y=well_readings.loc[well],
+                    name=self.properties["name"].loc[well],
+                )
+                for well in wells
+            ]
         else:
             if groupby not in self.properties.columns:
-                raise ValueError("\'%s\' not found in the properties table. Please specify a column which exists" %
-                                 groupby)
+                raise ValueError(
+                    f"'{groupby}' not found in the properties table. "
+                    f"Please specify a column which exists"
+                )
             grouped = self.properties.groupby(groupby)
             index_list = [grouped.get_group(group).index for group in grouped.groups]
             reading_map = []
@@ -133,27 +175,36 @@ class Spectrophotometry(_Kinetics):
                 if len(common_set) != 0:
                     reading_map.append(well_readings.loc[common_set])
             if len(reading_map) != 0:
-                traces = [go.Scatter(x=self.readings.columns,
-                                     y=reading.mean(),
-                                     name=self._truncate_name(self.properties[groupby].loc[reading.iloc[0].name],
-                                                              max_legend_len),
-                                     error_y=dict(type='data', array=reading.std(), visible=True)
-                                     )
-                          for reading in reading_map]
+                traces = [
+                    go.Scatter(
+                        x=self.readings.columns,
+                        y=reading.mean(),
+                        name=self._truncate_name(
+                            self.properties[groupby].loc[reading.iloc[0].name],
+                            max_legend_len,
+                        ),
+                        error_y=dict(type="data", array=reading.std(), visible=True),
+                    )
+                    for reading in reading_map
+                ]
             else:
-                raise ValueError("No common groups found for specified groupby: %s" % groupby)
+                raise ValueError(
+                    f"No common groups found for specified groupby: {groupby}"
+                )
 
         # Assume all data is generated from the same run-id for now
         if not title:
-            title = "Kinetics Curve (%s)" % self.datasets[0].attributes["instruction"]["run"]["id"]
+            title = f"Kinetics Curve ({self.datasets[0].attributes['instruction']['run']['id']})"
         if not xlabel:
-            xlabel = 'Time'
+            xlabel = "Time"
         if not ylabel:
             if self.operation == "absorbance":
-                ylabel = "RAU (%s)" % self.datasets[0].attributes["instruction"]["operation"]["wavelength"]
+                ylabel = f"RAU ({self.datasets[0].attributes['instruction']['operation']['wavelength']})"
             elif self.operation == "fluorescence":
-                ylabel = "RFU (%s/%s)" % (self.datasets[0].attributes["instruction"]["operation"]["excitation"],
-                                          self.datasets[0].attributes["instruction"]["operation"]["emission"])
+                ylabel = (
+                    f"RFU ({self.datasets[0].attributes['instruction']['operation']['excitation']}/"
+                    f"{self.datasets[0].attributes['instruction']['operation']['emission']})"
+                )
             elif self.operation == "luminescence":
                 ylabel = "Luminescence"
 
@@ -162,23 +213,16 @@ class Spectrophotometry(_Kinetics):
             xaxis=dict(
                 title=xlabel,
                 titlefont=dict(
-                    family='Courier New, monospace',
-                    size=18,
-                    color='#7f7f7f'
-                )
+                    family="Courier New, monospace", size=18, color="#7f7f7f"
+                ),
             ),
             yaxis=dict(
                 title=ylabel,
                 titlefont=dict(
-                    family='Courier New, monospace',
-                    size=18,
-                    color='#7f7f7f'
-                )
+                    family="Courier New, monospace", size=18, color="#7f7f7f"
+                ),
             ),
-            legend=dict(
-                x=100,
-                y=1
-            )
+            legend=dict(x=100, y=1),
         )
 
         fig = go.Figure(data=traces, layout=layout)
@@ -188,6 +232,6 @@ class Spectrophotometry(_Kinetics):
     def _truncate_name(string, max_len=20):
         """Truncates string to max_len number of characters, adds ellipses instead if its too long"""
         if len(string) > max_len:
-            return string[:(max_len - 3)] + "..."
+            return string[: (max_len - 3)] + "..."
         else:
             return string

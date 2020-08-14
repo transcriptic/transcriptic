@@ -1,28 +1,28 @@
 {
   "refs": {
     "test_plate6": {
-      "new": "96-pcr", 
+      "new": "96-pcr",
       "discard": true
     }
-  }, 
+  },
   "instructions": [
     {
-      "dataref": "dataref", 
-      "index": "none", 
+      "dataref": "dataref",
+      "index": "none",
       "lanes": [
         {
-          "object": "test_plate6/0", 
+          "object": "test_plate6/0",
           "library_concentration": 1.0
-        }, 
+        },
         {
-          "object": "test_plate6/1", 
+          "object": "test_plate6/1",
           "library_concentration": 2
         }
-      ], 
-      "flowcell": "PE", 
-      "mode": "mid", 
-      "sequencer": "nextseq", 
-      "library_size": 34, 
+      ],
+      "flowcell": "PE",
+      "mode": "mid",
+      "sequencer": "nextseq",
+      "library_size": 34,
       "op": "illumina_sequence"
     }
   ]

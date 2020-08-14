@@ -5,10 +5,9 @@ from transcriptic import english
 
 
 class AP2EnTestCase(unittest.TestCase):
-
     def test_web_example(self):
 
-        with open('./test/resources/web_example.json') as data_file:
+        with open("./test/resources/web_example.json") as data_file:
             pjson = json.load(data_file)
         parser_instance = english.AutoprotocolParser(pjson)
         parser_instance.job_tree()
@@ -17,8 +16,9 @@ class AP2EnTestCase(unittest.TestCase):
         steps = parser_instance.object_list
         forest = parser_instance.forest_list
 
-        self.assertEqual(forest, [[1], [2], [3], [4], [5], [
-                         6], [7], [8], [9], [10], [11]])
+        self.assertEqual(
+            forest, [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]]
+        )
 
     def test_med_json_job_tree(self):
 
@@ -210,8 +210,10 @@ class AP2EnTestCase(unittest.TestCase):
         steps = parser_instance.object_list
         forest = parser_instance.forest_list
 
-        self.assertEqual(forest, [[1, [2]], [3, [4]], [5, [6]], [
-            7, [8]], [9, [10]], [11, [12]], [13, [14]]])
+        self.assertEqual(
+            forest,
+            [[1, [2]], [3, [4]], [5, [6]], [7, [8]], [9, [10]], [11, [12]], [13, [14]]],
+        )
 
     def test_measure_suite(self):
         """
@@ -222,7 +224,7 @@ class AP2EnTestCase(unittest.TestCase):
         4. Measure volume of 8 wells from test_plate2
         """
 
-        with open('./test/resources/measure_suite.json') as data_file:
+        with open("./test/resources/measure_suite.json") as data_file:
             pjson = json.load(data_file)
         parser_instance = english.AutoprotocolParser(pjson)
         parser_instance.job_tree()
@@ -232,10 +234,14 @@ class AP2EnTestCase(unittest.TestCase):
         forest = parser_instance.forest_list
 
         self.assertEqual(
-            parsed_output, ["Measure concentration of 2.0 microliters DNA source aliquots of test_plate2",
-                            "Measure mass of test_plate2",
-                            "Measure volume of 12 wells from test_plate",
-                            "Measure volume of 8 wells from test_plate2"])
+            parsed_output,
+            [
+                "Measure concentration of 2.0 microliters DNA source aliquots of test_plate2",
+                "Measure mass of test_plate2",
+                "Measure volume of 12 wells from test_plate",
+                "Measure volume of 8 wells from test_plate2",
+            ],
+        )
         self.assertEqual(forest, [[1, [2, [4]]], [3]])
 
     def test_mag_incubate(self):
@@ -248,7 +254,7 @@ class AP2EnTestCase(unittest.TestCase):
         5. Magnetically incubate pcr_0 for 30.0 minutes with a tip position of 1.5
         """
 
-        with open('./test/resources/mag_incubate.json') as data_file:
+        with open("./test/resources/mag_incubate.json") as data_file:
             pjson = json.load(data_file)
         parser_instance = english.AutoprotocolParser(pjson)
         parser_instance.job_tree()
@@ -258,11 +264,15 @@ class AP2EnTestCase(unittest.TestCase):
         forest = parser_instance.forest_list
 
         self.assertEqual(
-            parsed_output, ["Magnetically release pcr_0 beads for 30.0 seconds at an amplitude of 0",
-                            "Distribute from test/1 into wells test/7, test/8, test/9",
-                            "Distribute from test/2 into wells test/10",
-                            "Distribute from test/0 into wells test/1",
-                            "Magnetically incubate pcr_0 for 30.0 minutes with a tip position of 1.5"])
+            parsed_output,
+            [
+                "Magnetically release pcr_0 beads for 30.0 seconds at an amplitude of 0",
+                "Distribute from test/1 into wells test/7, test/8, test/9",
+                "Distribute from test/2 into wells test/10",
+                "Distribute from test/0 into wells test/1",
+                "Magnetically incubate pcr_0 for 30.0 minutes with a tip position of 1.5",
+            ],
+        )
         self.assertEqual(forest, [[1, [5]], [2, [4]], [3]])
 
     def test_mag_mix(self):
@@ -275,7 +285,7 @@ class AP2EnTestCase(unittest.TestCase):
         5. Magnetically mix pcr_0 beads for 30.0 seconds at an amplitude of 0
         """
 
-        with open('./test/resources/mag_mix.json') as data_file:
+        with open("./test/resources/mag_mix.json") as data_file:
             pjson = json.load(data_file)
         parser_instance = english.AutoprotocolParser(pjson)
         parser_instance.job_tree()
@@ -285,11 +295,15 @@ class AP2EnTestCase(unittest.TestCase):
         forest = parser_instance.forest_list
 
         self.assertEqual(
-            parsed_output, ["Magnetically release pcr_0 beads for 30.0 seconds at an amplitude of 0",
-                            "Distribute from test/1 into wells test/7, test/8, test/9",
-                            "Distribute from test/2 into wells test/10",
-                            "Distribute from test/0 into wells test/1",
-                            "Magnetically mix pcr_0 beads for 30.0 seconds at an amplitude of 0"])
+            parsed_output,
+            [
+                "Magnetically release pcr_0 beads for 30.0 seconds at an amplitude of 0",
+                "Distribute from test/1 into wells test/7, test/8, test/9",
+                "Distribute from test/2 into wells test/10",
+                "Distribute from test/0 into wells test/1",
+                "Magnetically mix pcr_0 beads for 30.0 seconds at an amplitude of 0",
+            ],
+        )
         self.assertEqual(forest, [[1, [5]], [2, [4]], [3]])
 
     def test_mag_dry(self):
@@ -302,7 +316,7 @@ class AP2EnTestCase(unittest.TestCase):
         5. Magnetically dry pcr_0 for 30.0 minutes
         """
 
-        with open('./test/resources/mag_dry.json') as data_file:
+        with open("./test/resources/mag_dry.json") as data_file:
             pjson = json.load(data_file)
         parser_instance = english.AutoprotocolParser(pjson)
         parser_instance.job_tree()
@@ -312,11 +326,15 @@ class AP2EnTestCase(unittest.TestCase):
         forest = parser_instance.forest_list
 
         self.assertEqual(
-            parsed_output, ["Magnetically release pcr_0 beads for 30.0 seconds at an amplitude of 0",
-                            "Distribute from test/1 into wells test/7, test/8, test/9",
-                            "Distribute from test/2 into wells test/10",
-                            "Distribute from test/0 into wells test/1",
-                            "Magnetically dry pcr_0 for 30.0 minutes"])
+            parsed_output,
+            [
+                "Magnetically release pcr_0 beads for 30.0 seconds at an amplitude of 0",
+                "Distribute from test/1 into wells test/7, test/8, test/9",
+                "Distribute from test/2 into wells test/10",
+                "Distribute from test/0 into wells test/1",
+                "Magnetically dry pcr_0 for 30.0 minutes",
+            ],
+        )
         self.assertEqual(forest, [[1, [5]], [2, [4]], [3]])
 
     def test_mag_collect(self):
@@ -329,7 +347,7 @@ class AP2EnTestCase(unittest.TestCase):
         5. Magnetically collect pcr_0 beads for 5 cycles with a pause duration of 30.0 seconds
         """
 
-        with open('./test/resources/mag_collect.json') as data_file:
+        with open("./test/resources/mag_collect.json") as data_file:
             pjson = json.load(data_file)
         parser_instance = english.AutoprotocolParser(pjson)
         parser_instance.job_tree()
@@ -339,11 +357,15 @@ class AP2EnTestCase(unittest.TestCase):
         forest = parser_instance.forest_list
 
         self.assertEqual(
-            parsed_output, ["Magnetically release pcr_0 beads for 30.0 seconds at an amplitude of 0",
-                            "Distribute from test/1 into wells test/7, test/8, test/9",
-                            "Distribute from test/2 into wells test/10",
-                            "Distribute from test/0 into wells test/1",
-                            "Magnetically collect pcr_0 beads for 5 cycles with a pause duration of 30.0 seconds"])
+            parsed_output,
+            [
+                "Magnetically release pcr_0 beads for 30.0 seconds at an amplitude of 0",
+                "Distribute from test/1 into wells test/7, test/8, test/9",
+                "Distribute from test/2 into wells test/10",
+                "Distribute from test/0 into wells test/1",
+                "Magnetically collect pcr_0 beads for 5 cycles with a pause duration of 30.0 seconds",
+            ],
+        )
         self.assertEqual(forest, [[1, [5]], [2, [4]], [3]])
 
     def test_purify(self):
@@ -354,7 +376,7 @@ class AP2EnTestCase(unittest.TestCase):
         3. Perform gel purification on the 0.8% agarose gel with band range(s) 0-10
         """
 
-        with open('./test/resources/purify.json') as data_file:
+        with open("./test/resources/purify.json") as data_file:
             pjson = json.load(data_file)
         parser_instance = english.AutoprotocolParser(pjson)
         parser_instance.job_tree()
@@ -364,9 +386,13 @@ class AP2EnTestCase(unittest.TestCase):
         forest = parser_instance.forest_list
 
         self.assertEqual(
-            parsed_output, ["Perform gel purification on the 0.8% agarose gel with band range(s) 0-10",
-                            "Perform gel purification on the 0.8% agarose gel with band range(s) 0-10",
-                            "Perform gel purification on the 0.8% agarose gel with band range(s) 0-10"])
+            parsed_output,
+            [
+                "Perform gel purification on the 0.8% agarose gel with band range(s) 0-10",
+                "Perform gel purification on the 0.8% agarose gel with band range(s) 0-10",
+                "Perform gel purification on the 0.8% agarose gel with band range(s) 0-10",
+            ],
+        )
         self.assertEqual(forest, [[1, [2, [3]]]])
 
     def test_dispense_suite(self):
@@ -377,7 +403,7 @@ class AP2EnTestCase(unittest.TestCase):
         3. Dispense 50 microliters of reagent with resource ID rs17gmh5wafm5p to the full plate of sample_plate5
         """
 
-        with open('./test/resources/dispense.json') as data_file:
+        with open("./test/resources/dispense.json") as data_file:
             pjson = json.load(data_file)
         parser_instance = english.AutoprotocolParser(pjson)
         parser_instance.job_tree()
@@ -386,9 +412,13 @@ class AP2EnTestCase(unittest.TestCase):
         forest = parser_instance.forest_list
 
         self.assertEqual(
-            parsed_output, ["Dispense 100 microliters of water to the full plate of sample_plate5",
-                            "Dispense corresponding amounts of water to 12 column(s) of sample_plate5",
-                            "Dispense 50 microliters of resource with resource ID rs17gmh5wafm5p to the full plate of sample_plate5"])
+            parsed_output,
+            [
+                "Dispense 100 microliters of water to the full plate of sample_plate5",
+                "Dispense corresponding amounts of water to 12 column(s) of sample_plate5",
+                "Dispense 50 microliters of resource with resource ID rs17gmh5wafm5p to the full plate of sample_plate5",
+            ],
+        )
         self.assertEqual(forest, [[1, [2, [3]]]])
 
     def test_illumina(self):
@@ -397,7 +427,7 @@ class AP2EnTestCase(unittest.TestCase):
         1. Illumina sequence wells test_plate6/0, test_plate6/1 with library size 34
         """
 
-        with open('./test/resources/illumina.json') as data_file:
+        with open("./test/resources/illumina.json") as data_file:
             pjson = json.load(data_file)
         parser_instance = english.AutoprotocolParser(pjson)
         parser_instance.job_tree()
@@ -407,7 +437,11 @@ class AP2EnTestCase(unittest.TestCase):
         forest = parser_instance.forest_list
 
         self.assertEqual(
-            parsed_output, ["Illumina sequence wells test_plate6/0, test_plate6/1 with library size 34"])
+            parsed_output,
+            [
+                "Illumina sequence wells test_plate6/0, test_plate6/1 with library size 34"
+            ],
+        )
         self.assertEqual(forest, [[1]])
 
     def test_flow(self):
@@ -416,7 +450,7 @@ class AP2EnTestCase(unittest.TestCase):
         1. Perform flow cytometry on well0 with the respective FSC and SSC channel parameters
         """
 
-        with open('./test/resources/flow.json') as data_file:
+        with open("./test/resources/flow.json") as data_file:
             pjson = json.load(data_file)
         parser_instance = english.AutoprotocolParser(pjson)
         parser_instance.job_tree()
@@ -426,5 +460,9 @@ class AP2EnTestCase(unittest.TestCase):
         forest = parser_instance.forest_list
 
         self.assertEqual(
-            parsed_output, ["Perform flow cytometry on test_plate/0 with the respective FSC and SSC channel parameters"])
+            parsed_output,
+            [
+                "Perform flow cytometry on test_plate/0 with the respective FSC and SSC channel parameters"
+            ],
+        )
         self.assertEqual(forest, [[1]])

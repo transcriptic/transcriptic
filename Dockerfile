@@ -52,4 +52,3 @@ WORKDIR /home/txpy
 
 RUN chown -R txpy /home/txpy
 USER txpy
-

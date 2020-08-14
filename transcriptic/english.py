@@ -4,32 +4,44 @@ import re
 from collections import OrderedDict
 
 
-PLURAL_UNITS = ["microliter", "nanoliter", "milliliter", "second", "minute",
-                "hour", "g", "nanometer"]
+PLURAL_UNITS = [
+    "microliter",
+    "nanoliter",
+    "milliliter",
+    "second",
+    "minute",
+    "hour",
+    "g",
+    "nanometer",
+]
 
-TEMP_DICT = {"cold_20": "-20 degrees celsius",
-             "cold_80": "-80 degrees celsius",
-             "warm_37": "37 degrees celsius", "cold_4": "4 degrees celsius",
-             "warm_30": "30 degrees celsius", "ambient": "room temperature"}
+TEMP_DICT = {
+    "cold_20": "-20 degrees celsius",
+    "cold_80": "-80 degrees celsius",
+    "warm_37": "37 degrees celsius",
+    "cold_4": "4 degrees celsius",
+    "warm_30": "30 degrees celsius",
+    "ambient": "room temperature",
+}
 
 
 class AutoprotocolParser(object):
-
     def __init__(self, protocol_obj, api=None, parsed_output=None):
-        self.api = api 
+        self.api = api
         self.resource = dict()
         self.parse(protocol_obj)
 
     def parse(self, obj):
         self.object_list = []
-        self.instructions = obj['instructions']
+        self.instructions = obj["instructions"]
 
         parsed_output = []
         for i in self.instructions:
             try:
-                output = getattr(self, i['op'])(i)
+                output = getattr(self, i["op"])(i)
                 parsed_output.extend(output) if isinstance(
-                    output, list) else parsed_output.append(output)
+                    output, list
+                ) else parsed_output.append(output)
             except AttributeError:
                 parsed_output.append("[Unknown instruction]")
 
@@ -42,7 +54,7 @@ class AutoprotocolParser(object):
         A Job Tree visualizes the instructions of a protocol in a hierarchical
         structure based on container dependency to help human readers with manual
         execution. Its construction utilizes the algorithm below, as well as the
-        Node object class (to store relational information) at the bottom of this 
+        Node object class (to store relational information) at the bottom of this
         script.
 
         Example Usage:
@@ -82,7 +94,7 @@ class AutoprotocolParser(object):
                 +---12
 
 
-        Variables 
+        Variables
         ---------
         steps: list
             deep list of objects per instruction/step;
@@ -94,7 +106,7 @@ class AutoprotocolParser(object):
         forest: list
             list of nested dictionaries, depicting parent-children relations
         forest_list: list
-            list of nested lists, depticting parent-children relations 
+            list of nested lists, depticting parent-children relations
         """
 
         # 1. Enforce depth of 1 for steps
@@ -113,8 +125,7 @@ class AutoprotocolParser(object):
         # 2. Convert steps to list of node objects (0,1,2,3...)
         def assign_nodes(steps):
             nodes = [i for i in range(len(steps))]
-            objects = list(
-                set([elem for sublist in steps for elem in sublist]))
+            objects = list(set([elem for sublist in steps for elem in sublist]))
 
             # checks for multiple src and dst objects -- added when looking for
             # mutiples
@@ -126,7 +137,7 @@ class AutoprotocolParser(object):
                 else:
                     split_objects.append(obj)
             objects = split_objects
-            del(split_objects)
+            del split_objects
 
             # populate with leafless trees (Node objects, no edges)
             for node in nodes:
@@ -139,7 +150,7 @@ class AutoprotocolParser(object):
                 leaves = []
                 for i, sublist in enumerate(steps):
                     for string in sublist:
-                        if string.count(',') > 0:
+                        if string.count(",") > 0:
                             if obj in string:
                                 leaves.append(i)
                         else:
@@ -153,7 +164,10 @@ class AutoprotocolParser(object):
                     # compute cross-product
                     for leaf1 in leaves:
                         for leaf2 in leaves:
-                            if str(leaf1) != str(leaf2) and sorted((leaf1, leaf2)) not in viable_edges:
+                            if (
+                                str(leaf1) != str(leaf2)
+                                and sorted((leaf1, leaf2)) not in viable_edges
+                            ):
                                 viable_edges.append(sorted((leaf1, leaf2)))
 
                     # form edge networks
@@ -190,8 +204,7 @@ class AutoprotocolParser(object):
             # node sorting in trees
             sorted_trees = []
             for tree in trees:
-                sorted_trees.append(
-                    sorted(tree, key=lambda x: int(x.name)))
+                sorted_trees.append(sorted(tree, key=lambda x: int(x.name)))
 
             # retrieve values of the nodes (the protocol's containers)
             # for each tree ... may want to use dictionary eventually
@@ -221,8 +234,11 @@ class AutoprotocolParser(object):
                     if len(node_values) == 2:
                         # single destination (x-1)
                         if node_values[1].count(",") == 0:
-                            dst_nodes = [i for i, sublist in enumerate(
-                                steps) if node_values[1] == sublist[0]]
+                            dst_nodes = [
+                                i
+                                for i, sublist in enumerate(steps)
+                                if node_values[1] == sublist[0]
+                            ]
                         # multiple destinations (x-many)
                         elif node_values[1].count(",") > 0:
                             dst_nodes = []
@@ -233,8 +249,11 @@ class AutoprotocolParser(object):
 
                     # ACTION ON A SINGLE OBJECT
                     elif len(node_values) == 1:
-                        dst_nodes = [i for i, sublist in enumerate(
-                            steps) if node_values[0] == sublist[0]]
+                        dst_nodes = [
+                            i
+                            for i, sublist in enumerate(steps)
+                            if node_values[0] == sublist[0]
+                        ]
 
                     # Constructing tuples in (child, parent) format
                     for dst_node in dst_nodes:
@@ -257,8 +276,7 @@ class AutoprotocolParser(object):
                 for digs in tree_digs:
                     for dig in digs:
                         if tuple(sorted(dig, reverse=True)) not in true_tree_digs:
-                            true_tree_digs.append(
-                                tuple(sorted(dig, reverse=True)))
+                            true_tree_digs.append(tuple(sorted(dig, reverse=True)))
 
                 # edge-case for dictionaries constructed with no edges
                 if true_tree_digs != [] and edge_flag == False:
@@ -278,8 +296,8 @@ class AutoprotocolParser(object):
                 for tup in digs_set:
                     id, parent_id = tup
                     # ensure all nodes accounted for
-                    nodes[id] = OrderedDict({'id': id})
-                    nodes[parent_id] = OrderedDict({'id': parent_id})
+                    nodes[id] = OrderedDict({"id": id})
+                    nodes[parent_id] = OrderedDict({"id": parent_id})
 
                 # pass 2: create trees and parent-child relations
                 for tup in digs_set:
@@ -289,10 +307,10 @@ class AutoprotocolParser(object):
                     if id != parent_id:
                         # add new_node as child to parent
                         parent = nodes[parent_id]
-                        if not 'children' in parent:
+                        if not "children" in parent:
                             # ensure parent has a 'children' field
-                            parent['children'] = []
-                        children = parent['children']
+                            parent["children"] = []
+                        children = parent["children"]
                         children.append(node)
 
                 desired_tree_idx = sorted(list(nodes.keys()))[0]
@@ -305,17 +323,26 @@ class AutoprotocolParser(object):
             forest_list = []
             for tree in forest:
                 tString = str(json.dumps(tree))
-                tString = tString.replace('"id": ', "").replace('"children": ', "").replace(
-                    '[{', "[").replace('}]', "]").replace('{', "[").replace('}', "]")
+                tString = (
+                    tString.replace('"id": ', "")
+                    .replace('"children": ', "")
+                    .replace("[{", "[")
+                    .replace("}]", "]")
+                    .replace("{", "[")
+                    .replace("}", "]")
+                )
 
                 # find largest repeated branch (if applicable)
                 # maybe think about using prefix trees or SIMD extensions for better
                 # efficiency
-                x, y, length, match = 0, 0, 0, ''
+                x, y, length, match = 0, 0, 0, ""
                 for y in range(len(tString)):
                     for x in range(len(tString)):
                         substring = tString[y:x]
-                        if len(list(re.finditer(re.escape(substring), tString))) > 1 and len(substring) > length:
+                        if (
+                            len(list(re.finditer(re.escape(substring), tString))) > 1
+                            and len(substring) > length
+                        ):
                             match = substring
                             length = len(substring)
 
@@ -334,8 +361,9 @@ class AutoprotocolParser(object):
                     # find all locations of repeated branch and remove
                     if len(hits) > 1:
                         for start_loc in hits[1:]:
-                            tString = tString[:start_loc] + \
-                                tString[start_loc:].replace(match, "]", 1)
+                            tString = tString[:start_loc] + tString[start_loc:].replace(
+                                match, "]", 1
+                            )
 
                 # increment all numbers in string to match the protocol
                 newString = ""
@@ -344,7 +372,9 @@ class AutoprotocolParser(object):
                     if el.isdigit():  # build number
                         numString += el
                     else:
-                        if numString != "":  # convert it to int and reinstantaite numString
+                        if (
+                            numString != ""
+                        ):  # convert it to int and reinstantaite numString
                             numString = str(int(numString) + 1)
                         newString += numString
                         newString += el
@@ -357,12 +387,12 @@ class AutoprotocolParser(object):
 
         # 6. Print job tree(s)
         def print_tree(lst, level=0):
-            print('    ' * (level - 1) + '+---' * (level > 0) + str(lst[0]))
+            print("    " * (level - 1) + "+---" * (level > 0) + str(lst[0]))
             for l in lst[1:]:
                 if type(l) is list:
                     print_tree(l, level + 1)
                 else:
-                    print('    ' * level + '+---' + l)
+                    print("    " * level + "+---" + l)
 
         # 1
         steps = depth_one(self.object_list)
@@ -380,41 +410,53 @@ class AutoprotocolParser(object):
             print_tree(tree_list)
 
     def absorbance(self, opts):
-        self.object_list.append([opts['object']])
-        return ("Measure absorbance at %s for %s of plate %s" %
-                (self.unit(opts['wavelength']),
-                 self.well_list(opts['wells']),
-                 opts['object']))
+        self.object_list.append([opts["object"]])
+        return (
+            f"Measure absorbance at {self.unit(opts['wavelength'])} for "
+            f"{self.well_list(opts['wells'])} of plate {opts['object']}"
+        )
 
     def acoustic_transfer(self, opts):
         transfers = []
-        for t in opts['groups'][0]['transfer']:
-            transfers.append("Acoustic transfer %s from %s to %s" %
-                             (self.unit(t["volume"]), t["from"], t["to"]))
+        for t in opts["groups"][0]["transfer"]:
+            transfers.append(
+                f"Acoustic transfer {self.unit(t['volume'])} "
+                f"from {t['from']} to {t['to']}"
+            )
             self.object_list.append([t["from"], t["to"]])
         return transfers
 
     def autopick(self, opts):
         picks = []
-        for i, g in enumerate(opts['groups']):
-            picks.extend(["Pick %s colonies from %s %s: %s to %s, %s" %
-                          (len(g["to"]), len(g['from']),
-                           ("well" if len(g['from']) is 1 else "wells"),
-                           self.well_list(g['from']),
-                           self.well_list(g['to']),
-                           ("data saved at '%s'" % opts["dataref"]
-                            if i is 0 else "analyzed with previous"))])
+        for i, g in enumerate(opts["groups"]):
+            picks.extend(
+                [
+                    "Pick %s colonies from %s %s: %s to %s, %s"
+                    % (
+                        len(g["to"]),
+                        len(g["from"]),
+                        ("well" if len(g["from"]) is 1 else "wells"),
+                        self.well_list(g["from"]),
+                        self.well_list(g["to"]),
+                        (
+                            f"data saved at '{opts['dataref']}'"
+                            if i is 0
+                            else "analyzed with previous"
+                        ),
+                    )
+                ]
+            )
             self.object_list.append([g["from"], g["to"]])
         return picks
 
     def cover(self, opts):
-        self.object_list.append([opts['object']])
-        return "Cover %s with a %s lid" % (opts['object'], opts['lid'])
+        self.object_list.append([opts["object"]])
+        return f"Cover {opts['object']} with a {opts['lid']} lid"
 
     def dispense(self, opts):
-        self.object_list.append([opts['object']])
+        self.object_list.append([opts["object"]])
         unique_vol = []
-        for col in opts['columns']:
+        for col in opts["columns"]:
             vol = self.unit(col["volume"])
             if vol not in unique_vol:
                 unique_vol.append(vol)
@@ -430,82 +472,99 @@ class AutoprotocolParser(object):
                     reagent = resource["results"][0]["name"].lower()
                     self.resource[resource_id] = reagent
                 else:
-                    reagent = "resource with resource ID %s" % resource_id
+                    reagent = f"resource with resource ID {resource_id}"
             else:
-                reagent = "resource with resource ID %s" % resource_id
+                reagent = f"resource with resource ID {resource_id}"
         else:
             reagent = "unknown"
 
-        if len(opts['columns']) == 12 and len(unique_vol) == 1:
-            return "Dispense %s of %s to the full plate of %s" % (
-                unique_vol[0], reagent, opts['object'])
+        if len(opts["columns"]) == 12 and len(unique_vol) == 1:
+            return (
+                f"Dispense {unique_vol[0]} of {reagent} to the full plate "
+                f"of {opts['object']}"
+            )
         else:
             return "Dispense corresponding amounts of %s to %d column(s) of %s" % (
-                reagent, len(opts['columns']), opts['object'])
+                reagent,
+                len(opts["columns"]),
+                opts["object"],
+            )
 
     def flash_freeze(self, opts):
-        self.object_list.append([opts['object']])
-        return ("Flash freeze %s for %s" %
-                (opts['object'], self.unit(opts['duration'])))
+        self.object_list.append([opts["object"]])
+        return f"Flash freeze {opts['object']} for {self.unit(opts['duration'])}"
 
     def fluorescence(self, opts):
-        self.object_list.append([opts['object']])
-        return ("Read fluorescence of %s of plate %s at excitation wavelength "
-                "%s and emission wavelength %s" %
-                (self.well_list(opts['wells']),
-                 opts['object'],
-                 self.unit(opts['excitation']),
-                 self.unit(opts['emission'])))
+        self.object_list.append([opts["object"]])
+        return (
+            f"Read fluorescence of {self.well_list(opts['wells'])} of "
+            f"plate {opts['object']} at excitation wavelength "
+            f"{self.unit(opts['excitation'])} and emission wavelength "
+            f"{self.unit(opts['emission'])}"
+        )
 
     def gel_separate(self, opts):
-        self.object_list.append([opts['matrix']])
-        return ("Perform gel electrophoresis using "
-                "a %s agarose gel for %s" % (opts['matrix'].split(',')[1][:-1],
-                                             self.unit(opts['duration'])))
+        self.object_list.append([opts["matrix"]])
+        return (
+            f"Perform gel electrophoresis using a "
+            f"{opts['matrix'].split(',')[1][:-1]} agarose gel for "
+            f"{self.unit(opts['duration'])}"
+        )
 
     def gel_purify(self, opts):
-        self.object_list.append([opts['matrix']])
+        self.object_list.append([opts["matrix"]])
         unique_bl = []
-        for ext in opts['extract']:
+        for ext in opts["extract"]:
             bl = ext["band_size_range"]
             if bl not in unique_bl:
                 unique_bl.append(bl)
         for i in range(len(unique_bl)):
-            unique_bl[i] = str(unique_bl[i]['min_bp']) + \
-                "-" + str(unique_bl[i]['max_bp'])
+            unique_bl[i] = (
+                str(unique_bl[i]["min_bp"]) + "-" + str(unique_bl[i]["max_bp"])
+            )
 
         if len(unique_bl) <= 3:
-            return "Perform gel purification on the %s agarose gel with band range(s) %s" % (
-                opts['matrix'].split(',')[1][:-1], ', '.join(unique_bl))
+            return (
+                f"Perform gel purification on the "
+                f"{opts['matrix'].split(',')[1][:-1]} agarose gel with "
+                f"band range(s) {', '.join(unique_bl)}"
+            )
         else:
-            return "Perform gel purification on the %s agarose gel with %s band ranges" % (
-                opts['matrix'].split(',')[1][:-1], len(unique_bl))
+            return (
+                f"Perform gel purification on the "
+                f"{opts['matrix'].split(',')[1][:-1]} agarose gel with "
+                f"{len(unique_bl)} band ranges"
+            )
 
     def incubate(self, opts):
-        self.object_list.append([opts['object']])
-        shaking = " (shaking)" if opts['shaking'] else ""
-        return "Incubate %s at %s for %s%s" % (opts['object'],
-                                               TEMP_DICT[opts['where']],
-                                               self.unit(opts['duration']),
-                                               shaking)
+        self.object_list.append([opts["object"]])
+        shaking = " (shaking)" if opts["shaking"] else ""
+        return (
+            f"Incubate {opts['object']} at "
+            f"{TEMP_DICT[opts['where']]} for "
+            f"{self.unit(opts['duration'])}{shaking}"
+        )
 
     def image_plate(self, opts):
-        self.object_list.append([opts['object']])
-        return "Take an image of %s" % opts['object']
+        self.object_list.append([opts["object"]])
+        return f"Take an image of {opts['object']}"
 
     def luminescence(self, opts):
-        self.object_list.append([opts['object']])
-        return ("Read luminescence of %s of plate %s" %
-                (self.well_list(opts['wells']), opts['object']))
+        self.object_list.append([opts["object"]])
+        return (
+            f"Read luminescence of {self.well_list(opts['wells'])} of "
+            f"plate {opts['object']}"
+        )
 
     def oligosynthesize(self, opts):
-        self.object_list.append([o['destination'] for o in opts['oligos']])
-        return (["Oligosynthesize sequence '%s' into '%s'" %
-                 (o['sequence'], o['destination']) for o in opts['oligos']])
+        self.object_list.append([o["destination"] for o in opts["oligos"]])
+        return [
+            f"Oligosynthesize sequence '{o['sequence']}' into " f"'{o['destination']}'"
+            for o in opts["oligos"]
+        ]
 
     def provision(self, opts):
-        self.object_list.append([self.platename(t['well'])
-                                 for t in opts['to']])
+        self.object_list.append([self.platename(t["well"]) for t in opts["to"]])
         resource_id = opts["resource_id"]
         if resource_id in self.resource:
             reagent = self.resource[resource_id]
@@ -515,28 +574,31 @@ class AutoprotocolParser(object):
                 reagent = resource["results"][0]["name"].lower()
                 self.resource[resource_id] = reagent
             else:
-                reagent = "resource with resource ID %s" % resource_id
+                reagent = f"resource with resource ID {resource_id}"
         else:
-            reagent = "resource with resource ID %s" % resource_id
+            reagent = f"resource with resource ID {resource_id}"
         provisions = []
-        for t in opts['to']:
-            provisions.append("Provision %s of %s to well %s of container %s" %
-                              (self.unit(t['volume']), reagent,
-                               self.well(t['well']), self.platename(t['well'])
-                               ))
+        for t in opts["to"]:
+            provisions.append(
+                f"Provision {self.unit(t['volume'])} of "
+                f"{reagent} to well {self.well(t['well'])} of "
+                f"container {self.platename(t['well'])}"
+            )
         return provisions
 
     def sanger_sequence(self, opts):
-        self.object_list.append([opts['object']])
-        seq = "Sanger sequence %s of plate %s" % (
-            self.well_list(opts['wells']), opts['object'])
-        if opts['type'] == "standard":
+        self.object_list.append([opts["object"]])
+        seq = (
+            f"Sanger sequence {self.well_list(opts['wells'])} of plate "
+            f"{opts['object']}"
+        )
+        if opts["type"] == "standard":
             return seq
-        elif opts['type'] == "rca":
-            return seq + " with %s" % self.platename(opts['primer'])
+        elif opts["type"] == "rca":
+            return seq + " with %s" % self.platename(opts["primer"])
 
     def illumina_sequence(self, opts):
-        unique_wells = self.get_unique_wells(opts['lanes'])
+        unique_wells = self.get_unique_wells(opts["lanes"])
         unique_plates = self.get_unique_plates(unique_wells)
         self.object_list.append(unique_plates)
 
@@ -544,177 +606,200 @@ class AutoprotocolParser(object):
             seq = "Illumina sequence wells %s" % (", ".join(unique_wells))
         elif len(unique_plates) > 1 and len(unique_plates) <= 3:
             seq = "Illumina sequence the corresponding wells of plates %s" % ", ".join(
-                unique_plates[0])
+                unique_plates[0]
+            )
         else:
             seq = "Illumina sequence the corresponding wells of %s plates" % len(
-                unique_wells)
+                unique_wells
+            )
 
-        return seq + " with library size %s" % opts['library_size']
+        return seq + f" with library size {opts['library_size']}"
 
     def flow_analyze(self, opts):
         wells = []
-        for sample in opts['samples']:
-            if sample['well'] not in wells:
-                wells.append(sample['well'])
+        for sample in opts["samples"]:
+            if sample["well"] not in wells:
+                wells.append(sample["well"])
         self.object_list.append([self.platename(w) for w in wells])
 
-        return "Perform flow cytometry on %s with the respective FSC and SSC channel parameters" % ", ".join(wells)
+        return (
+            "Perform flow cytometry on %s with the respective FSC and SSC channel parameters"
+            % ", ".join(wells)
+        )
 
     def seal(self, opts):
         self.object_list.append([opts["object"]])
-        return "Seal %s (%s)" % (opts['object'], opts['type'])
+        return f"Seal {opts['object']} ({opts['type']})"
 
     def spin(self, opts):
         self.object_list.append([opts["object"]])
-        return ("Spin %s for %s at %s" %
-                (opts['object'], self.unit(opts['duration']),
-                 self.unit(opts['acceleration'])))
+        return (
+            f"Spin {opts['object']} for {self.unit(opts['duration'])} at "
+            f"{self.unit(opts['acceleration'])}"
+        )
 
     def spread(self, opts):
-        self.object_list.append(
-            [self.well(opts['from']), self.well(opts['to'])])
-        return ["Spread %s of bacteria from well %s of %s "
-                "to well %s of agar plate %s" %
-                (opts['volume'], self.well(opts['from']),
-                 self.platename(opts['from']), self.well(opts['to']),
-                 self.platename(opts['to']))]
+        self.object_list.append([self.well(opts["from"]), self.well(opts["to"])])
+        return [
+            f"Spread {opts['volume']} of bacteria from well "
+            f"{self.well(opts['from'])} of {self.platename(opts['from'])} "
+            f"to well {self.well(opts['to'])} of agar plate "
+            f"{self.platename(opts['to'])}"
+        ]
 
     def stamp(self, opts):
         stamps = []
-        for g in opts['groups']:
+        for g in opts["groups"]:
             for pip in g:
                 if pip == "transfer":
-                    stamps.extend(["Stamp %s from source origin %s "
-                                   "to destination origin %s %s (%s)" %
-                                   (self.unit(p['volume']),
-                                    p['from'],
-                                    p['to'],
-                                    ("with the same set of tips as previous" if
-                                     (len(g[pip]) > 1 and i > 0) else ""),
-                                    ("%s rows x %s columns" %
-                                     (g['shape']['rows'],
-                                      g['shape']['columns']))
-                                    ) for i, p in enumerate(g[pip])
-                                   ])
-                    from_objs = str([self.platename(p['from'])
-                                     for i, p in enumerate(g[pip])])
-                    to_objs = str([self.platename(p['to'])
-                                   for i, p in enumerate(g[pip])])
+                    stamps.extend(
+                        [
+                            "Stamp %s from source origin %s "
+                            "to destination origin %s %s (%s)"
+                            % (
+                                self.unit(p["volume"]),
+                                p["from"],
+                                p["to"],
+                                (
+                                    "with the same set of tips as previous"
+                                    if (len(g[pip]) > 1 and i > 0)
+                                    else ""
+                                ),
+                                (
+                                    "%s rows x %s columns"
+                                    % (g["shape"]["rows"], g["shape"]["columns"])
+                                ),
+                            )
+                            for i, p in enumerate(g[pip])
+                        ]
+                    )
+                    from_objs = str(
+                        [self.platename(p["from"]) for i, p in enumerate(g[pip])]
+                    )
+                    to_objs = str(
+                        [self.platename(p["to"]) for i, p in enumerate(g[pip])]
+                    )
                     self.object_list.append([from_objs, to_objs])
         return stamps
 
     def thermocycle(self, opts):
         self.object_list.append([opts["object"]])
-        return "Thermocycle %s" % opts['object']
+        return f"Thermocycle {opts['object']}"
 
     def pipette(self, opts):
         pipettes = []
-        for g in opts['groups']:
+        for g in opts["groups"]:
             for pip in g:
                 if pip == "mix":
                     for m in g[pip]:
-                        pipettes.append("Mix well %s of plate %s %d times "
-                                        "with a volume of %s" %
-                                        (self.well(m['well']),
-                                         self.platename(
-                                            m['well']),
-                                            m['repetitions'],
-                                            self.unit(m['volume']))
-                                        )
-                        self.object_list.append(self.platename(m['well']))
+                        pipettes.append(
+                            "Mix well %s of plate %s %d times "
+                            "with a volume of %s"
+                            % (
+                                self.well(m["well"]),
+                                self.platename(m["well"]),
+                                m["repetitions"],
+                                self.unit(m["volume"]),
+                            )
+                        )
+                        self.object_list.append(self.platename(m["well"]))
                 elif pip == "transfer":
-                    pipettes.extend(["Transfer %s from %s "
-                                     "to %s %s" %
-                                     (self.unit(p['volume']),
-                                      p['from'],
-                                      p['to'],
-                                      ("with the same tip as previous" if (
-                                          len(g[pip]) > 1 and i > 0) else "")
-                                      ) for i, p in enumerate(g[pip])
-                                     ])
+                    pipettes.extend(
+                        [
+                            f"Transfer {self.unit(p['volume'])} from {p['from']} to {p['to']} {'with the same tip as previous' if len(g[pip]) > 1 and i > 0 else ''}"
+                            for i, p in enumerate(g[pip])
+                        ]
+                    )
 
-                    from_objs = str([self.platename(p['from'])
-                                     for i, p in enumerate(g[pip])])
-                    to_objs = str([self.platename(p['to'])
-                                   for i, p in enumerate(g[pip])])
+                    from_objs = str(
+                        [self.platename(p["from"]) for i, p in enumerate(g[pip])]
+                    )
+                    to_objs = str(
+                        [self.platename(p["to"]) for i, p in enumerate(g[pip])]
+                    )
                     self.object_list.append([from_objs, to_objs])
                 elif pip == "distribute":
-                    pipettes.append("Distribute from %s into %s" %
-                                    (g[pip]['from'],
-                                     self.well_list([d['well'] for
-                                                     d in g[pip]['to']], 20)))
-                    self.object_list.append(
-                        [g[pip]['from'], g[pip]['to'][0]['well']])
+                    pipettes.append(
+                        f"Distribute from {g[pip]['from']} into "
+                        f"{self.well_list([d['well'] for d in g[pip]['to']], 20)}"
+                    )
+                    self.object_list.append([g[pip]["from"], g[pip]["to"][0]["well"]])
                 elif pip == "consolidate":
-                    pipettes.append("Consolidate %s into %s" %
-                                    (self.well_list([c['well'] for c in
-                                                     g[pip]['from']], 20),
-                                     g[pip]['to']))
-                    self.object_list.append(
-                        [g[pip]['from'][0]['well'], g[pip]['to']])
+                    pipettes.append(
+                        f"Consolidate "
+                        f"{self.well_list([c['well'] for c in g[pip]['from']], 20)} "
+                        f"into {g[pip]['to']}"
+                    )
+                    self.object_list.append([g[pip]["from"][0]["well"], g[pip]["to"]])
         return pipettes
 
     def magnetic_transfer(self, opts):
-        specific_op = list(opts['groups'][0][0].keys())[0]
-        specs_dict = opts['groups'][0][0][specific_op]
+        specific_op = list(opts["groups"][0][0].keys())[0]
+        specs_dict = opts["groups"][0][0][specific_op]
         self.object_list.append([specs_dict["object"]])
-        seq = "Magnetically %s %s" % (specific_op, specs_dict["object"])
+        seq = f"Magnetically {specific_op} {specs_dict['object']}"
 
         if specific_op == "dry":
             return seq + " for %s" % self.unit(specs_dict["duration"])
         elif specific_op == "incubate":
-            return seq + " for %s with a tip position of %s" % (
-                self.unit(specs_dict["duration"]), specs_dict["tip_position"])
+            return (
+                seq + f" for {self.unit(specs_dict['duration'])} with a "
+                f"tip position of {specs_dict['tip_position']}"
+            )
         elif specific_op == "collect":
-            return seq + " beads for %s cycles with a pause duration of %s" % (
-                specs_dict["cycles"], self.unit(specs_dict["pause_duration"]))
+            return (
+                seq + f" beads for {specs_dict['cycles']} cycles with a "
+                f"pause duration of {self.unit(specs_dict['pause_duration'])}"
+            )
         elif specific_op == "release" or "mix":
-            return seq + " beads for %s at an amplitude of %s" % (
-                self.unit(specs_dict["duration"]), specs_dict["amplitude"])
+            return (
+                seq + f" beads for {self.unit(specs_dict['duration'])} at "
+                f"an amplitude of {specs_dict['amplitude']}"
+            )
 
     def measure_volume(self, opts):
-        unique_plates = self.get_unique_plates(opts['object'])
+        unique_plates = self.get_unique_plates(opts["object"])
         self.object_list.append(unique_plates)
 
         if len(unique_plates) <= 3:
-            return "Measure volume of %s wells from %s" % (
-                len(opts['object']), ", ".join(unique_plates))
+            return f"Measure volume of {len(opts['object'])} wells from {', '.join(unique_plates)}"
         else:
-            return "Measure volume of %s wells from the %s plates" % (
-                len(opts['object']), len(unique_plates))
+            return f"Measure volume of {len(opts['object'])} wells from the {len(unique_plates)} plates"
 
     def measure_mass(self, opts):
-        unique_plates = self.get_unique_plates(opts['object'])
+        unique_plates = self.get_unique_plates(opts["object"])
         self.object_list.append(unique_plates)
-        return "Measure mass of %s" % ", ".join(opts['object'])
+        return "Measure mass of %s" % ", ".join(opts["object"])
 
     def measure_concentration(self, opts):
-        unique_plates = self.get_unique_plates(opts['object'])
+        unique_plates = self.get_unique_plates(opts["object"])
         self.object_list.append(unique_plates)
-        return "Measure concentration of %s %s source aliquots of %s" % (
-            self.unit(opts['volume']), opts['measurement'], self.platename(opts['object'][0]))
+        return (
+            f"Measure concentration of {self.unit(opts['volume'])} "
+            f"{opts['measurement']} source aliquots of {self.platename(opts['object'][0])}"
+        )
 
     def uncover(self, opts):
         self.object_list.append([opts["object"]])
-        return "Uncover %s" % opts['object']
+        return f"Uncover {opts['object']}"
 
     def unseal(self, opts):
         self.object_list.append([opts["object"]])
-        return "Unseal %s" % opts['object']
+        return f"Unseal {opts['object']}"
 
     @staticmethod
     def platename(ref):
-        return ref.split('/')[0]
+        return ref.split("/")[0]
 
     @staticmethod
     def well(ref):
-        return ref.split('/')[1]
+        return ref.split("/")[1]
 
     @staticmethod
     def get_unique_wells(list_of_wells):
         unique_wells = []
         for well in list_of_wells:
-            w = well['object']
+            w = well["object"]
             if w not in unique_wells:
                 unique_wells.append(w)
         return unique_wells
@@ -723,7 +808,7 @@ class AutoprotocolParser(object):
     def get_unique_plates(list_of_wells):
         unique_plates = []
         for well in list_of_wells:
-            loc = well.find('/')
+            loc = well.find("/")
             if loc == -1:
                 plate = well
             else:
@@ -735,26 +820,26 @@ class AutoprotocolParser(object):
 
     @staticmethod
     def well_list(wells, max_len=10):
-        well_list = "wells " + (', ').join(str(x) for x in wells)
+        well_list = "wells " + (", ").join(str(x) for x in wells)
         if len(wells) > max_len:
             well_list = str(len(wells)) + " wells"
         return well_list
 
     @staticmethod
     def unit(u):
-        value = u.split(':')[0]
-        unit = u.split(':')[1]
-        return ("%s %s" % (value,
-                           (unit + "s" if (float(value) > 1 and
-                                           unit in PLURAL_UNITS) else unit))
-                )
+        value = u.split(":")[0]
+        unit = u.split(":")[1]
+        return (
+            f"{value} "
+            f"{unit + 's' if float(value) > 1 and unit in PLURAL_UNITS else unit}"
+        )
 
 
 class Node(object):
     """
-    A Node represents a Job Tree element that fulfils a broader child-parent 
+    A Node represents a Job Tree element that fulfils a broader child-parent
     relational structure. It contains relevant information on its relationships
-    in the form of edges. The job_tree algorithm above then constructs the 
+    in the form of edges. The job_tree algorithm above then constructs the
     actual hierachy of the aforementioned relational structure.
 
     Example Usage:

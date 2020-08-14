@@ -1,382 +1,382 @@
 {
   "refs": {
     "sample_wells": {
-      "new": "96-pcr", 
+      "new": "96-pcr",
       "discard": true
-    }, 
+    },
     "extract_Well(Container(sample_wells), 13, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 0, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 14, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 12, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 17, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 4, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 9, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 6, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 19, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 8, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 1, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 15, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 18, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 5, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 16, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 11, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 3, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 10, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 7, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
-    }, 
+    },
     "extract_Well(Container(sample_wells), 2, None)": {
-      "new": "micro-1.5", 
+      "new": "micro-1.5",
       "store": {
         "where": "cold_4"
       }
     }
-  }, 
+  },
   "instructions": [
     {
-      "dataref": "gel_purify_test_0", 
-      "matrix": "size_select(8,0.8%)", 
-      "ladder": "ladder1", 
-      "volume": "10.0:microliter", 
+      "dataref": "gel_purify_test_0",
+      "matrix": "size_select(8,0.8%)",
+      "ladder": "ladder1",
+      "volume": "10.0:microliter",
       "objects": [
-        "sample_wells/0", 
-        "sample_wells/1", 
-        "sample_wells/2", 
-        "sample_wells/3", 
-        "sample_wells/4", 
-        "sample_wells/5", 
-        "sample_wells/6", 
+        "sample_wells/0",
+        "sample_wells/1",
+        "sample_wells/2",
+        "sample_wells/3",
+        "sample_wells/4",
+        "sample_wells/5",
+        "sample_wells/6",
         "sample_wells/7"
-      ], 
+      ],
       "extract": [
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 0, None)/0", 
-          "lane": 0, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 0, None)/0",
+          "lane": 0,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 1, None)/0", 
-          "lane": 1, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 1, None)/0",
+          "lane": 1,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 2, None)/0", 
-          "lane": 2, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 2, None)/0",
+          "lane": 2,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 3, None)/0", 
-          "lane": 3, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 3, None)/0",
+          "lane": 3,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 4, None)/0", 
-          "lane": 4, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 4, None)/0",
+          "lane": 4,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 5, None)/0", 
-          "lane": 5, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 5, None)/0",
+          "lane": 5,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 6, None)/0", 
-          "lane": 6, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 6, None)/0",
+          "lane": 6,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 7, None)/0", 
-          "lane": 7, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 7, None)/0",
+          "lane": 7,
           "elution_buffer": "water"
         }
-      ], 
+      ],
       "op": "gel_purify"
-    }, 
+    },
     {
-      "dataref": "gel_purify_test_1", 
-      "matrix": "size_select(8,0.8%)", 
-      "ladder": "ladder1", 
-      "volume": "10.0:microliter", 
+      "dataref": "gel_purify_test_1",
+      "matrix": "size_select(8,0.8%)",
+      "ladder": "ladder1",
+      "volume": "10.0:microliter",
       "objects": [
-        "sample_wells/8", 
-        "sample_wells/9", 
-        "sample_wells/10", 
-        "sample_wells/11", 
-        "sample_wells/12", 
-        "sample_wells/13", 
-        "sample_wells/14", 
+        "sample_wells/8",
+        "sample_wells/9",
+        "sample_wells/10",
+        "sample_wells/11",
+        "sample_wells/12",
+        "sample_wells/13",
+        "sample_wells/14",
         "sample_wells/15"
-      ], 
+      ],
       "extract": [
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 8, None)/0", 
-          "lane": 0, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 8, None)/0",
+          "lane": 0,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 9, None)/0", 
-          "lane": 1, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 9, None)/0",
+          "lane": 1,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 10, None)/0", 
-          "lane": 2, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 10, None)/0",
+          "lane": 2,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 11, None)/0", 
-          "lane": 3, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 11, None)/0",
+          "lane": 3,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 12, None)/0", 
-          "lane": 4, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 12, None)/0",
+          "lane": 4,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 13, None)/0", 
-          "lane": 5, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 13, None)/0",
+          "lane": 5,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 14, None)/0", 
-          "lane": 6, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 14, None)/0",
+          "lane": 6,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 15, None)/0", 
-          "lane": 7, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 15, None)/0",
+          "lane": 7,
           "elution_buffer": "water"
         }
-      ], 
+      ],
       "op": "gel_purify"
-    }, 
+    },
     {
-      "dataref": "gel_purify_test_2", 
-      "matrix": "size_select(8,0.8%)", 
-      "ladder": "ladder1", 
-      "volume": "10.0:microliter", 
+      "dataref": "gel_purify_test_2",
+      "matrix": "size_select(8,0.8%)",
+      "ladder": "ladder1",
+      "volume": "10.0:microliter",
       "objects": [
-        "sample_wells/16", 
-        "sample_wells/17", 
-        "sample_wells/18", 
+        "sample_wells/16",
+        "sample_wells/17",
+        "sample_wells/18",
         "sample_wells/19"
-      ], 
+      ],
       "extract": [
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 16, None)/0", 
-          "lane": 0, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 16, None)/0",
+          "lane": 0,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 17, None)/0", 
-          "lane": 1, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 17, None)/0",
+          "lane": 1,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 18, None)/0", 
-          "lane": 2, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 18, None)/0",
+          "lane": 2,
           "elution_buffer": "water"
-        }, 
+        },
         {
-          "elution_volume": "5.0:microliter", 
+          "elution_volume": "5.0:microliter",
           "band_size_range": {
-            "max_bp": 10, 
+            "max_bp": 10,
             "min_bp": 0
-          }, 
-          "destination": "extract_Well(Container(sample_wells), 19, None)/0", 
-          "lane": 3, 
+          },
+          "destination": "extract_Well(Container(sample_wells), 19, None)/0",
+          "lane": 3,
           "elution_buffer": "water"
         }
-      ], 
+      ],
       "op": "gel_purify"
     }
   ]
