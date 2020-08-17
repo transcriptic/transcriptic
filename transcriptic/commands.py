@@ -15,7 +15,7 @@ from os.path import isfile, expanduser, abspath
 from transcriptic.english import AutoprotocolParser
 from transcriptic.config import Connection
 from transcriptic.signing import StrateosSign
-from transcriptic.util import iter_json, flatmap, ascii_encode, makedirs
+from transcriptic.util import iter_json, flatmap, ascii_encode, makedirs, PreviewParameters
 from transcriptic import routes
 
 import sys
