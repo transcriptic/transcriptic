@@ -161,6 +161,7 @@ class PreviewParameters:
         the refs aliquot values
         """
         ref_dict = defaultdict(lambda: defaultdict(dict))
+        ref_dict['refs'] = {}
         for cid, index_arr in self.selected_samples.items():
             container = self.container_cache.get(cid)
             cont_name = PreviewParameters.format_container_name(container)
