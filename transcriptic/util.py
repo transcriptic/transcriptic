@@ -170,11 +170,21 @@ class PreviewParameters:
                 'type': container.get('container_type').get('id'),
                 'store': container.get('storage_condition'),
                 'cover': container.get('cover', None),
-                'properties': container.get('properties')
+                'properties': container.get('properties'),
+                'aliquots': {}
             }
+
             if None not in index_arr:
                 ref_dict['refs'][cont_name]['aliquots'] = self.\
                     get_selected_aliquots(container, index_arr)
+            elif container.get('aliquots', None):
+                for ali in container.get('aliquots'):
+                    ref_dict['refs'][cont_name]['aliquots'][ali['well_idx']] = {
+                        'name': ali['name'],
+                        'volume': ali['volume_ul']+":microliter",
+                        'properties': ali['properties']
+                    }
+
         return ref_dict
 
     def traverse(self, obj, callback=None):
